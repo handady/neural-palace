@@ -6,12 +6,15 @@
         <div id="progress"></div>
       </div>
     </div>
-    <NodeInfo
-      v-if="currentNode"
-      :node="currentNode"
-      :position="currentPosition"
-      ref="nodeInfoRef"
-    />
+    <transition :name="transitionName">
+      <NodeInfo
+        v-if="currentNode"
+        :node="currentNode"
+        :position="currentPosition"
+        ref="nodeInfoRef"
+        @click="focusOnNode"
+      />
+    </transition>
     <NodePannel
       v-if="currentNode"
       :node="currentNode"
@@ -22,7 +25,7 @@
 </template>
 
 <script>
-import { onMounted, ref, onUnmounted } from "vue";
+import { onMounted, ref, onUnmounted, watch } from "vue";
 import ForceGraph3D from "3d-force-graph";
 import * as d3 from "d3";
 import * as THREE from "three";
@@ -54,6 +57,45 @@ export default {
     const manager = createLoadingManager(); // 创建LoadingManager对象
     const resizeHandler = () => updateSize(Graph); // 监听浏览器窗口变化
     const nodeInfoRef = ref(null); // 用于保存节点信息组件的引用
+    const selectedNode = ref(null); // 用于保存当前选中的节点
+    const transitionName = ref("animate__animated"); // 初始化为基础动画类
+
+    const focusOnNode = () => {
+      // 聚焦到当前选中的节点
+      const distance = 40;
+      const distRatio =
+        1 +
+        distance /
+          Math.hypot(
+            selectedNode.value.x,
+            selectedNode.value.y,
+            selectedNode.value.z
+          );
+
+      const newPos =
+        selectedNode.value.x || selectedNode.value.y || selectedNode.value.z
+          ? {
+              x: selectedNode.value.x * distRatio,
+              y: selectedNode.value.y * distRatio,
+              z: selectedNode.value.z * distRatio,
+            }
+          : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+
+      Graph.value.cameraPosition(
+        newPos, // new position
+        selectedNode.value, // lookAt ({ x, y, z })
+        3000 // ms transition duration
+      );
+    };
+
+    watch(currentNode, (newVal, oldVal) => {
+      if (newVal && !oldVal) {
+        transitionName.value = "zoomIn";
+      }
+      if (!newVal && oldVal) {
+        transitionName.value = "zoomOut";
+      }
+    });
 
     onMounted(() => {
       // 预加载纹理
@@ -96,9 +138,10 @@ export default {
               node.y,
               node.z
             );
+            selectedNode.value = node;
             currentPosition.value = {
-              x: position.x - 100,
-              y: position.y - 100,
+              x: position.x,
+              y: position.y,
             };
             currentNode.value = {
               image: node.img, // 节点图片
@@ -138,6 +181,8 @@ export default {
       currentNode,
       currentPosition,
       nodeInfoRef,
+      focusOnNode,
+      transitionName,
     };
   },
 };
@@ -215,10 +260,13 @@ function animateScene(Graph, universeMesh, starMesh) {
   background-color: #4caf50;
   width: 0;
 }
-.bounce-enter-active {
-  animation: animate__bounceIn 1s; /* 使用 animate.css 的 bounceIn 动画 */
+
+.zoomIn-enter-active,
+.zoomIn-leave-active {
+  animation: zoomIn 0.5s;
 }
-.bounce-leave-active {
-  animation: animate__bounceOut 1s; /* 使用 animate.css 的 bounceOut 动画 */
+.zoomOut-enter-active,
+.zoomOut-leave-active {
+  animation: zoomOut 0.5s;
 }
 </style>

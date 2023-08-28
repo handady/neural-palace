@@ -1,5 +1,7 @@
 <template>
-  <div class="pannel" :style="positionStyle">我是pannel</div>
+  <div class="pannel" :style="positionStyle">
+    <button @click="toNeuron">点我进入</button>
+  </div>
 </template>
 
 <script>
@@ -16,8 +18,7 @@ export default {
         : {};
     },
     mounted() {
-      // console.log(this.node);
-      console.log(this.position);
+      console.log(this.node);
     },
   },
 };
