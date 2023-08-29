@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { onMounted, ref, onUnmounted, watch } from "vue";
+import { onMounted, ref, onUnmounted, watch, nextTick } from "vue";
 import ForceGraph3D from "3d-force-graph";
 import * as d3 from "d3";
 import * as THREE from "three";
@@ -50,10 +50,15 @@ export default {
   components: { NodeInfo, NodePannel },
   setup() {
     // 创建变量
-    const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = 
-      [ref(null), ref(null), ref(null), ref(null), ref(null)];
+    const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = [
+      ref(null),
+      ref(null),
+      ref(null),
+      ref(null),
+      ref(null),
+    ];
     const nodeColorScale = d3.scaleOrdinal(d3.schemeRdYlGn[4]);
-    const transitionName = ref('animate__animated');
+    const transitionName = ref("animate__animated");
     // Handlers and Utils
     const manager = createLoadingManager();
     const resizeHandler = () => updateSize(Graph);
@@ -121,14 +126,27 @@ export default {
               node.z
             );
             selectedNode.value = node;
-            currentPosition.value = {
-              x: position.x,
-              y: position.y,
-            };
             currentNode.value = {
               image: node.img, // 节点图片
               description: node.id, // 节点信息
             };
+            nextTick(() => {
+              // 等待 DOM 更新
+              if (nodeInfoRef.value && nodeInfoRef.value.$el) {
+                const halfWidth = nodeInfoRef.value.$el.clientWidth / 2;
+                const halfHeight = nodeInfoRef.value.$el.clientHeight / 2;
+
+                currentPosition.value = {
+                  x: position.x - halfWidth,
+                  y: position.y - halfHeight,
+                };
+              } else {
+                currentPosition.value = {
+                  x: position.x,
+                  y: position.y,
+                };
+              }
+            });
           } else {
             currentNode.value = null;
             currentPosition.value = null;
