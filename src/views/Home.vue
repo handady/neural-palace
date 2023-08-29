@@ -50,15 +50,13 @@ export default {
   components: { NodeInfo, NodePannel },
   setup() {
     // 创建变量
-    const Graph = ref(null);
-    const currentNode = ref(null); // 用于保存当前悬停的节点
-    const currentPosition = ref(null); // 用于保存当前悬停节点的位置
-    const nodeColorScale = d3.scaleOrdinal(d3.schemeRdYlGn[4]); // 节点颜色
-    const manager = createLoadingManager(); // 创建LoadingManager对象
-    const resizeHandler = () => updateSize(Graph); // 监听浏览器窗口变化
-    const nodeInfoRef = ref(null); // 用于保存节点信息组件的引用
-    const selectedNode = ref(null); // 用于保存当前选中的节点
-    const transitionName = ref("animate__animated"); // 初始化为基础动画类
+    const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = 
+      [ref(null), ref(null), ref(null), ref(null), ref(null)];
+    const nodeColorScale = d3.scaleOrdinal(d3.schemeRdYlGn[4]);
+    const transitionName = ref('animate__animated');
+    // Handlers and Utils
+    const manager = createLoadingManager();
+    const resizeHandler = () => updateSize(Graph);
 
     const focusOnNode = () => {
       // 聚焦到当前选中的节点
@@ -112,23 +110,7 @@ export default {
         .linkThreeObject((link) => createLinkObject(link, nodeColorScale))
         .backgroundColor("rgba(0,0,0,0)")
         .onNodeClick((node) => {
-          const distance = 40;
-          const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-
-          const newPos =
-            node.x || node.y || node.z
-              ? {
-                  x: node.x * distRatio,
-                  y: node.y * distRatio,
-                  z: node.z * distRatio,
-                }
-              : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
-
-          Graph.value.cameraPosition(
-            newPos, // new position
-            node, // lookAt ({ x, y, z })
-            3000 // ms transition duration
-          );
+          focusOnNode();
         })
         .nodeOpacity(0.85)
         .onNodeHover((node) => {

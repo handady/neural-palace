@@ -19,7 +19,7 @@ export default {
     },
   },
   mounted() {
-    console.log(this.node.image);
+    console.log(this.node);
   },
 };
 </script>
@@ -39,9 +39,10 @@ export default {
     inset 0px 11px 28px 0px rgb(255, 255, 255, 0.8);
   display: flex;
   justify-content: center;
+  width:10%;
 }
 
 .node-image {
-  width: 100px;
+  width: 100%;
 }
 </style>
