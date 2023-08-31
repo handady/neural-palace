@@ -133,12 +133,6 @@ export default {
             nextTick(() => {
               // 等待 DOM 更新
               if (nodeInfoRef.value && nodeInfoRef.value.$el) {
-                const cardElement =
-                  nodeInfoRef.value.$el.querySelector(".card"); // 获取 .card 元素
-                  console.log(cardElement);
-                const cardHeight = cardElement.clientHeight;
-
-                console.log("Card Height:", cardHeight);
                 const halfWidth = nodeInfoRef.value.$el.clientWidth / 2;
                 const halfHeight = nodeInfoRef.value.$el.clientHeight / 2;
 
