@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home'
-import Neuron from '@/components/Neuron'
+import Neuron from '@/views/Neuron/Neuron'
 import SceneEditor from '@/components/SceneEditor'
 
 const routes = [
@@ -10,7 +10,7 @@ const routes = [
         component: Home
     },
     {
-        path: '/neuron/:id',
+        path: '/neuron',
         name: 'Neuron',
         component: Neuron
     },

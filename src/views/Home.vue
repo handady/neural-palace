@@ -11,15 +11,10 @@
         v-if="currentNode"
         :node="currentNode"
         :position="currentPosition"
+        @focusOnNode="focusOnNode"
         ref="nodeInfoRef"
-        @click="focusOnNode"
       />
     </transition>
-    <NodePannel
-      v-if="currentNode"
-      :node="currentNode"
-      :position="currentPosition"
-    />
     <div id="3d-graph"></div>
   </div>
 </template>
@@ -31,7 +26,6 @@ import * as d3 from "d3";
 import * as THREE from "three";
 import { createStars, createUniverse } from "@/utils/functions"; // 导入相关函数
 import NodeInfo from "@/components/NodeInfo.vue";
-import NodePannel from "@/components/NodePannel.vue";
 import "animate.css";
 import universeImg from "@/assets/银河全景.jpg";
 import materialMap from "@/configs/materialConfigs"; // 单独配置的材质配置文件
@@ -47,7 +41,7 @@ import {
 } from "@/utils/init"; // 导入相关函数
 
 export default {
-  components: { NodeInfo, NodePannel },
+  components: { NodeInfo },
   setup() {
     // 创建变量
     const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = [
@@ -137,9 +131,12 @@ export default {
                 const halfHeight = nodeInfoRef.value.$el.clientHeight / 2;
 
                 currentPosition.value = {
-                  x: position.x - halfWidth,
-                  y: position.y - halfHeight,
+                  x: position.x,
+                  y: position.y,
+                  halfHeight: halfHeight,
+                  halfWidth: halfWidth,
                 };
+                console.log(currentPosition.value);
               } else {
                 currentPosition.value = {
                   x: position.x,
