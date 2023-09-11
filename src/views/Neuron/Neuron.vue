@@ -1,6 +1,6 @@
 <template>
   <div class="neuron">
-    <h1>Neuron</h1>
+    <img :src="contentUrl" alt="contentUrl" class="imageContent">
   </div>
 </template>
 
@@ -23,4 +23,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.neuron {
+  width: 100%;
+  height: 100%;
+}
+.imageContent{
+  width: 100%;
+  height: 100%;
+}
+</style>

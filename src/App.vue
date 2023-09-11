@@ -3,7 +3,7 @@
     <header>
       <!-- 这里可以是你的导航栏 -->
     </header>
-    <main>
+    <main class="main">
       <router-view v-slot="{ Component }">
         <template v-if="$route.meta.keepAlive">
           <keep-alive>
@@ -30,4 +30,8 @@ export default {
 
 <style>
 /* 在这里添加全局样式 */
+#app, .main {
+  width: 100%;
+  height: 100%;
+}
 </style>
