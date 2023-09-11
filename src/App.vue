@@ -4,7 +4,14 @@
       <!-- 这里可以是你的导航栏 -->
     </header>
     <main>
-      <router-view/>
+      <router-view v-slot="{ Component }">
+        <template v-if="$route.meta.keepAlive">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </template>
+        <component :is="Component" v-else />
+      </router-view>
       <!-- 这个router-view标签会根据当前的路由显示相应的组件 -->
     </main>
     <footer>
@@ -17,8 +24,8 @@
 // 导入组件
 
 export default {
-  name: 'App'
-}
+  name: "App",
+};
 </script>
 
 <style>

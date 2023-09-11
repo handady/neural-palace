@@ -21,56 +21,76 @@
 </template>
 
 <script>
+import { ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
 export default {
-  data() {
-    return {
-      flipped: false,
-      imgHeight: 0,
-    };
-  },
+  name: "YourComponent",
   props: ["node", "position"],
-  computed: {
-    positionStyle() {
-      return this.position
-        ? {
-            left: `${this.position.x - this.position.halfWidth}px`,
-            top: `${this.position.y - this.imgHeight / 2}px`,
-          }
-        : {};
-    },
-    frontStyle() {
-      return this.flipped
-        ? { transform: "perspective(600px) rotateY(-180deg)" }
-        : {};
-    },
-    backStyle() {
-      return this.flipped
-        ? { transform: "perspective(600px) rotateY(0deg)" }
-        : {};
-    },
-  },
-  methods: {
-    toggleFlip() {
-      this.flipped = !this.flipped;
-    },
-    // 聚焦node
-    focusOnNode() {
-      this.$emit("focusOnNode");
-    },
-    // 进入node查看详情,路由跳转,不用传参数
-    enterNode() {
-      this.$router.push({ name: "Neuron" });
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      const img = this.$el.querySelector(".front img");
+  setup(props, { emit }) {
+    // 创建变量
+    const flipped = ref(false);
+    const imgHeight = ref(0);
+    const store = useStore();
+    const router = useRouter();
+
+    onMounted(() => {
+      const img = document.querySelector(".front img");
       img.onload = () => {
-        const card = this.$el.querySelector(".card");
+        const card = document.querySelector(".card");
         card.style.height = `${img.height}px`;
-        this.imgHeight = img.height;
+        imgHeight.value = img.height;
       };
     });
+    // 翻转卡片
+    const toggleFlip = () => {
+      flipped.value = !flipped.value;
+    };
+    // 聚焦到当前选中的节点
+    const focusOnNode = () => {
+      emit("focusOnNode");
+    };
+    // 进入节点
+    const enterNode = () => {
+      store.commit(
+        "setContentUrl",
+        "https://avatars0.githubusercontent.com/u/10555820?s=460&v=4"
+      );
+      router.push({ name: "Neuron" });
+    };
+    // 计算位置
+    const positionStyle = computed(() => {
+      return props.position
+        ? {
+            left: `${props.position.x - props.position.halfWidth}px`,
+            top: `${props.position.y - imgHeight.value / 2}px`,
+          }
+        : {};
+    });
+    // 计算翻转
+    const frontStyle = computed(() => {
+      return flipped.value
+        ? { transform: "perspective(600px) rotateY(-180deg)" }
+        : {};
+    });
+
+    const backStyle = computed(() => {
+      return flipped.value
+        ? { transform: "perspective(600px) rotateY(0deg)" }
+        : {};
+    });
+
+    return {
+      flipped,
+      imgHeight,
+      toggleFlip,
+      focusOnNode,
+      enterNode,
+      positionStyle,
+      frontStyle,
+      backStyle,
+    };
   },
 };
 </script>

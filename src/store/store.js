@@ -2,16 +2,16 @@ import { createStore } from 'vuex';
 
 export default createStore({
     state: {
-        count: 0,
+        contentUrl: '',
     },
     mutations: {
-        increment(state) {
-            state.count++;
+        setContentUrl(state, contentUrl) {
+            state.contentUrl = contentUrl;
         }
     },
     actions: {
-        increment(context) {
-            context.commit('increment');
+        setContentUrl(context, contentUrl) {
+            context.commit('setContentUrl', contentUrl);
         }
     },
     modules: {}
