@@ -1,9 +1,9 @@
 {
   "nodes": [
     {"id": "Myriel", "group": 1, "img": "@/assets/people.webp","color": "rgb(82,255,137)"},
-    {"id": "Napoleon", "group": 1, "material": "SGT_Autumn_Ground_1", "img": "@/assets/logo.png"},
-    {"id": "Mlle.Baptistine", "group": 1, "material": "SGT_Ice_1", "img": "@/assets/logo.png"},
-    {"id": "Mme.Magloire", "group": 1, "material": "SGT_Flowers_1", "img": "@/assets/logo.png"},
+    {"id": "Napoleon", "group": 1, "material": "SGT_Autumn_Ground_1", "img": "@/assets/logo.png", "color": "rgb(82,255,137)"},
+    {"id": "Mlle.Baptistine", "group": 1, "material": "SGT_Ice_1", "img": "@/assets/logo.png", "color": "rgb(82,255,137)"},
+    {"id": "Mme.Magloire", "group": 1, "material": "SGT_Flowers_1", "img": "@/assets/logo.png", "color": "rgb(82,255,137)"},
     {"id": "CountessdeLo", "group": 1},
     {"id": "Geborand", "group": 1},
     {"id": "Champtercier", "group": 1},
