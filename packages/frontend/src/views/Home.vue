@@ -20,11 +20,12 @@
 </template>
 
 <script>
-import { onMounted, ref, onUnmounted, watch, nextTick } from "vue";
+import { onMounted, ref, onUnmounted, watch, nextTick, } from "vue";
 import ForceGraph3D from "3d-force-graph";
 import * as d3 from "d3";
 import * as THREE from "three";
 import { createStars, createUniverse } from "@/utils/functions"; // 导入相关函数
+import { getNeuronNode } from "@/api/neuronNode"
 import NodeInfo from "@/components/NodeInfo.vue";
 import "animate.css";
 import universeImg from "@/assets/银河全景.jpg";
@@ -51,6 +52,10 @@ export default {
       ref(null),
       ref(null),
     ];
+    const initData = ref({
+      nodes: [],
+      links: [],
+    });
     const nodeColorScale = d3.scaleOrdinal(d3.schemeRdYlGn[4]);
     const transitionName = ref("animate__animated");
     // Handlers and Utils
@@ -85,6 +90,17 @@ export default {
       );
     };
 
+    // 初始化数据
+    const initGraphData = () => {
+      getNeuronNode().then((res) => {
+        if(res.code === 200) {
+          const nodes = res.data
+          initData.value.nodes = nodes
+          Graph.value.graphData(initData.value)
+        }
+      });
+    }
+
     watch(currentNode, (newVal, oldVal) => {
       if (newVal && !oldVal) {
         transitionName.value = "zoomIn";
@@ -102,7 +118,6 @@ export default {
       Graph.value = ForceGraph3D({ controlType: "trackball" })(
         document.getElementById("3d-graph")
       )
-        .jsonUrl("./miserables.json")
         .showNavInfo(false)
         .nodeResolution(16)
         .nodeColor((node) => getNodeColor(node, nodeColorScale))
@@ -121,8 +136,9 @@ export default {
             );
             selectedNode.value = node;
             currentNode.value = {
-              image: node.img, // 节点图片
-              description: node.id, // 节点信息
+              id: node.id, // 节点信息
+              coverImg: node.coverImg, // 节点封面图片
+              contentImg: node.contentImg, // 节点图片
             };
             nextTick(() => {
               // 等待 DOM 更新
@@ -136,7 +152,6 @@ export default {
                   halfHeight: halfHeight,
                   halfWidth: halfWidth,
                 };
-                console.log(currentPosition.value);
               } else {
                 currentPosition.value = {
                   x: position.x,
@@ -172,6 +187,9 @@ export default {
     onUnmounted(() => {
       window.removeEventListener("resize", resizeHandler);
     });
+
+    // 初始化数据
+    initGraphData()
 
     return {
       Graph,

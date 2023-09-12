@@ -6,6 +6,9 @@ const port = 5201;
 // 跨域
 const cors = require('./middlewares/cors');
 app.use(cors);
+// 标准响应
+const standardResponse = require('./middlewares/standardResponse');
+app.use(standardResponse);
 
 // 路由
 const mainRoutes = require('./routes');

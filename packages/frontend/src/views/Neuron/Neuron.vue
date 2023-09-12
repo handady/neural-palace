@@ -1,11 +1,10 @@
 <template>
-  <div class="neuron">
-    <img :src="contentUrl" alt="contentUrl" class="imageContent" />
+  <div class="neuron" :style="backgroundStyle">
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 
 export default {
@@ -13,25 +12,23 @@ export default {
   setup() {
     const store = useStore();
     const contentUrl = store.state.contentUrl;
+    const backgroundStyle = computed(() => {
+      return {
+        background: `url(${contentUrl}) no-repeat center center`,
+        backgroundSize: "cover",
+      };
+    });
     onMounted(() => {});
     return {
       contentUrl,
+      backgroundStyle,
     };
-  },
-  mounted() {
-    this.$axios.get("/").then((response) => {
-      console.log(response);
-    });
   },
 };
 </script>
 
 <style scoped>
 .neuron {
-  width: 100%;
-  height: 100%;
-}
-.imageContent {
   width: 100%;
   height: 100%;
 }

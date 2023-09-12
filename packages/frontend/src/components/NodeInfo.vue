@@ -3,7 +3,7 @@
     <div class="card" @click="toggleFlip">
       <div class="front" :style="frontStyle">
         <img
-          src="https://avatars0.githubusercontent.com/u/10555820?s=460&v=4"
+          :src="node.coverImg"
           alt="front"
         />
       </div>
@@ -55,7 +55,7 @@ export default {
     const enterNode = () => {
       store.commit(
         "setContentUrl",
-        "https://avatars0.githubusercontent.com/u/10555820?s=460&v=4"
+        props.contentImg
       );
       router.push({ name: "Neuron" });
     };
