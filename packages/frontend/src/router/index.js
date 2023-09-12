@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home";
 import Neuron from "@/views/Neuron/Neuron";
-import SceneEditor from "@/components/SceneEditor";
 
 const routes = [
   {
@@ -16,11 +15,6 @@ const routes = [
     path: "/neuron",
     name: "Neuron",
     component: Neuron,
-  },
-  {
-    path: "/edit-scene",
-    name: "SceneEditor",
-    component: SceneEditor,
   },
 ];
 

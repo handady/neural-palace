@@ -1,6 +1,5 @@
 <template>
-  <div class="neuron" :style="backgroundStyle">
-  </div>
+  <div class="neuron" :style="backgroundStyle"></div>
 </template>
 
 <script>

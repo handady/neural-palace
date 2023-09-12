@@ -12,8 +12,12 @@
         :node="currentNode"
         :position="currentPosition"
         @focusOnNode="focusOnNode"
+        @addNode="addNode"
         ref="nodeInfoRef"
       />
+    </transition>
+    <transition :name="transitionName">
+      <NodeDialog></NodeDialog>
     </transition>
     <div id="3d-graph"></div>
   </div>
@@ -27,6 +31,7 @@ import * as THREE from "three";
 import { createStars, createUniverse } from "@/utils/functions"; // 导入相关函数
 import { getNeuronNode } from "@/api/neuronNode"
 import NodeInfo from "@/components/NodeInfo.vue";
+import NodeDialog from "@/components/NodeDialog.vue"
 import "animate.css";
 import universeImg from "@/assets/银河全景.jpg";
 import materialMap from "@/configs/materialConfigs"; // 单独配置的材质配置文件
@@ -42,7 +47,7 @@ import {
 } from "@/utils/init"; // 导入相关函数
 
 export default {
-  components: { NodeInfo },
+  components: { NodeInfo, NodeDialog },
   setup() {
     // 创建变量
     const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = [
@@ -88,6 +93,11 @@ export default {
         selectedNode.value, // lookAt ({ x, y, z })
         3000 // ms transition duration
       );
+    };
+
+    // 增加节点
+    const addNode = () => {
+      console.log('增加')
     };
 
     // 初始化数据
@@ -198,6 +208,7 @@ export default {
       nodeInfoRef,
       focusOnNode,
       transitionName,
+      addNode,
     };
   },
 };

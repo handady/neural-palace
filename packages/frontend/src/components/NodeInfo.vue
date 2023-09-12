@@ -9,9 +9,9 @@
       </div>
       <div class="back" :style="backStyle">
         <div class="back-content">
-          <div>Hans Distance</div>
-          <button @click.stop="focusOnNode">点我聚焦node</button>
-          <span>1622352990@qq.com</span>
+          <button @click.stop="addNode">点我增加</button>
+          <button @click.stop="deleteNode">点我删除</button>
+          <button @click.stop="focusOnNode">点我聚焦</button>
           <button @click.stop="enterNode">点我进入</button>
           <div></div>
         </div>
@@ -47,6 +47,10 @@ export default {
     const toggleFlip = () => {
       flipped.value = !flipped.value;
     };
+    // 增加节点
+    const addNode = () => {
+      emit("addNode")
+    };
     // 聚焦到当前选中的节点
     const focusOnNode = () => {
       emit("focusOnNode");
@@ -55,7 +59,7 @@ export default {
     const enterNode = () => {
       store.commit(
         "setContentUrl",
-        props.contentImg
+        props.node.contentImg
       );
       router.push({ name: "Neuron" });
     };
@@ -87,6 +91,7 @@ export default {
       toggleFlip,
       focusOnNode,
       enterNode,
+      addNode,
       positionStyle,
       frontStyle,
       backStyle,
