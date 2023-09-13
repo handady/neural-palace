@@ -16,3 +16,24 @@ export const addNeuronNode = (data) => {
     data
   })
 }
+
+// 删除节点
+export const deleteNeuronNode = (id) => {
+  return request({
+    url: "/api/neuronNode/deleteNode",
+    method: 'post',
+    data: {
+      id
+    }
+  })
+}
+
+// 修改节点
+export const updateNeuronNode = (data) => {
+  return request({
+    url: "/api/neuronNode/updateNode",
+    method: 'post',
+    data
+  })
+}
+

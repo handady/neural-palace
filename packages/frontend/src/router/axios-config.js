@@ -1,5 +1,6 @@
 // 全局配置axios请求
 import axios from "axios";
+import { ElMessage } from "element-plus";
 
 // 默认超时时间
 axios.defaults.timeout = 60000;
@@ -27,16 +28,19 @@ axios.interceptors.response.use((res) => {
   // 处理status状态码
   if (status === 401) {
     // 登录失效
-    console.log("登录失效");
+    ElMessage.error("登录失效");
   } else if (status === 403) {
     // 没有权限
-    console.log("没有权限");
+    ElMessage.error("没有权限");
+  } else if (status === 404) {
+    // 资源不存在
+    ElMessage.error("资源不存在");
   } else if (status === 500) {
     // 服务端错误
-    console.log("服务端错误");
+    ElMessage.error("服务端错误");
   } else if (status !== 200) {
     // 服务端返回的其他错误
-    console.log(message);
+    ElMessage.error(message);
   } else {
     // 成功
     return res.data;

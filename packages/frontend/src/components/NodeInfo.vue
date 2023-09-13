@@ -2,19 +2,18 @@
   <div :style="positionStyle" class="node-info">
     <div class="card" @click="toggleFlip">
       <div class="front" :style="frontStyle">
-        <img
-          :src="node.coverImg"
-          alt="front"
-        />
+        <img :src="node.coverImg" alt="front" />
       </div>
       <div class="back" :style="backStyle">
-        <div class="back-content">
-          <button @click.stop="addNode">点我增加</button>
+        <div class="back-content" v-if="!isModifyNode">
+          <button @click.stop="modifyNode('add')">点我增加</button>
+          <button @click.stop="modifyNode('edit')">点我修改</button>
           <button @click.stop="deleteNode">点我删除</button>
           <button @click.stop="focusOnNode">点我聚焦</button>
           <button @click.stop="enterNode">点我进入</button>
           <div></div>
         </div>
+        <NodeDialog v-else @click.stop></NodeDialog>
       </div>
     </div>
   </div>
@@ -24,16 +23,21 @@
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import NodeDialog from "@/components/NodeDialog.vue";
 
 export default {
   name: "YourComponent",
   props: ["node", "position"],
+  components: {
+    NodeDialog,
+  },
   setup(props, { emit }) {
     // 创建变量
     const flipped = ref(false);
     const imgHeight = ref(0);
     const store = useStore();
     const router = useRouter();
+    const isModifyNode = ref(false);
 
     onMounted(() => {
       const img = document.querySelector(".front img");
@@ -48,8 +52,8 @@ export default {
       flipped.value = !flipped.value;
     };
     // 增加节点
-    const addNode = () => {
-      emit("addNode")
+    const modifyNode = (type) => {
+      isModifyNode.value = true;
     };
     // 聚焦到当前选中的节点
     const focusOnNode = () => {
@@ -57,10 +61,7 @@ export default {
     };
     // 进入节点
     const enterNode = () => {
-      store.commit(
-        "setContentUrl",
-        props.node.contentImg
-      );
+      store.commit("setContentUrl", props.node.contentImg);
       router.push({ name: "Neuron" });
     };
     // 计算位置
@@ -91,10 +92,11 @@ export default {
       toggleFlip,
       focusOnNode,
       enterNode,
-      addNode,
+      modifyNode,
       positionStyle,
       frontStyle,
       backStyle,
+      isModifyNode,
     };
   },
 };
