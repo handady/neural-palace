@@ -12,6 +12,7 @@
         :node="currentNode"
         :position="currentPosition"
         @focusOnNode="focusOnNode"
+        @modifySuccess="initGraphData"
         ref="nodeInfoRef"
       />
     </transition>
@@ -139,6 +140,9 @@ export default {
               id: node.id, // 节点信息
               coverImg: node.coverImg, // 节点封面图片
               contentImg: node.contentImg, // 节点图片
+              color: node.color, // 节点颜色
+              material: node.material, // 节点材质
+              group: node.group, // 节点分组
             };
             nextTick(() => {
               // 等待 DOM 更新
@@ -198,6 +202,7 @@ export default {
       nodeInfoRef,
       focusOnNode,
       transitionName,
+      initGraphData,
     };
   },
 };

@@ -19,7 +19,7 @@ const getCosAuthorization = () => {
 
 // 处理文件上传到COS的函数
 const uploadToCos = (req, res) => {
-  const fileData = req.body.fileData; // 从请求中获取文件数据
+  const fileData = req.body.fileData; // 这是一个 Buffer 对象
   const authorization = getCosAuthorization();
 
   // 使用授权进行COS操作（例如上传文件）

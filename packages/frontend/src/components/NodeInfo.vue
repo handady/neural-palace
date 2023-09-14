@@ -1,10 +1,10 @@
 <template>
   <div :style="positionStyle" class="node-info">
-    <div class="card" @click="toggleFlip">
-      <div class="front" :style="frontStyle">
+    <div class="card">
+      <div class="front" :style="frontStyle" @click="toggleFlip">
         <img :src="node.coverImg" alt="front" />
       </div>
-      <div class="back" :style="backStyle">
+      <div class="back" :style="backStyle" @click="toggleFlip">
         <div class="back-content" v-if="!isModifyNode">
           <button @click.stop="modifyNode('add')">点我增加</button>
           <button @click.stop="modifyNode('edit')">点我修改</button>
@@ -13,7 +13,14 @@
           <button @click.stop="enterNode">点我进入</button>
           <div></div>
         </div>
-        <NodeDialog v-else @click.stop></NodeDialog>
+        <NodeDialog
+          v-else
+          @click.stop
+          @goBack="goBack"
+          @modifySuccess="modifySuccess"
+          :nodeInfo="node"
+          :modifyType="modifyType"
+        ></NodeDialog>
       </div>
     </div>
   </div>
@@ -38,6 +45,8 @@ export default {
     const store = useStore();
     const router = useRouter();
     const isModifyNode = ref(false);
+    const modifyType = ref("");
+    const card = ref(null);
 
     onMounted(() => {
       const img = document.querySelector(".front img");
@@ -46,14 +55,36 @@ export default {
         card.style.height = `${img.height}px`;
         imgHeight.value = img.height;
       };
+      // 获取card元素
+      card.value = document.querySelector(".node-info");
     });
     // 翻转卡片
     const toggleFlip = () => {
       flipped.value = !flipped.value;
     };
-    // 增加节点
+    // 节点操作
     const modifyNode = (type) => {
+      modifyType.value = type;
       isModifyNode.value = true;
+      // 修改card的宽和高
+      if (card.value) {
+        card.value.style.minHeight = "350px";
+        card.value.style.minWidth = "250px";
+      }
+    };
+    // 子节点函数
+    const goBack = () => {
+      isModifyNode.value = false;
+      // 修改card的宽和高
+      if (card.value) {
+        card.value.style.minHeight = "";
+        card.value.style.minWidth = "";
+      }
+    };
+    const modifySuccess = () => {
+      goBack();
+      // 让父组件重新获取数据
+      emit("modifySuccess");
     };
     // 聚焦到当前选中的节点
     const focusOnNode = () => {
@@ -97,6 +128,9 @@ export default {
       frontStyle,
       backStyle,
       isModifyNode,
+      goBack,
+      modifyType,
+      modifySuccess
     };
   },
 };
@@ -110,6 +144,7 @@ export default {
   display: flex;
   justify-content: center;
   width: 15%;
+  max-width: 512px;
 }
 
 .card {

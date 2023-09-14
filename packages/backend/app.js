@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const port = 5201;
 
+// 使用 Express 内建中间件
+app.use(express.json());  // 用于解析 JSON 负载
+app.use(express.urlencoded({ extended: true })); // 用于解析 URL 编码的负载
+app.use(express.static('public'));  // 静态文件服务
+
 // 中间件
 // 跨域
 const cors = require('./middlewares/cors');

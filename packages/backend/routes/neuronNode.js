@@ -36,11 +36,11 @@ router.post('/deleteNode', (req, res) => {
 
 // 修改节点
 router.post('/updateNode', (req, res) => {
-  const { id, group, material, coverImg, contentImg, color } = req.body;
+  const { id, group, material, coverImg, contentImg, color, originId } = req.body;
 
-  const sql = 'UPDATE nodes SET `group` = ?, material = ?, coverImg = ?, contentImg = ?, color = ? WHERE id = ?';
+  const sql = 'UPDATE nodes SET `group` = ?, material = ?, coverImg = ?, contentImg = ?, color = ?, id = ? WHERE id = ?';
 
-  connection.query(sql, [group, material, coverImg, contentImg, color, id], (err, result) => {
+  connection.query(sql, [group, material, coverImg, contentImg, color, id, originId], (err, result) => {
     if (err) res.standard(500, null, err);
     else res.standard(200, { id }, '节点修改成功');
   });
