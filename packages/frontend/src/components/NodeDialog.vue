@@ -12,7 +12,6 @@
           modifyType === "add" ? "添加" : "修改"
         }}</el-button>
       </el-row>
-      <Upload></Upload>
       <el-form-item label="名称" prop="id">
         <el-input v-model="newNode.id"></el-input>
       </el-form-item>
@@ -22,11 +21,21 @@
       <el-form-item label="材质" prop="material">
         <el-input v-model="newNode.material"></el-input>
       </el-form-item>
-      <el-form-item label="封面" prop="coverImg">
-        <el-input v-model="newNode.coverImg"></el-input>
+      <el-form-item label="封面">
+        <Upload
+          :imgUrl="coverImgUrl"
+          :imgName="nodeInfo.coverImg"
+          :imgType="'cover'"
+          @uploadSuccessCover="uploadSuccessCover"
+        ></Upload>
       </el-form-item>
-      <el-form-item label="内容" prop="contentImg">
-        <el-input v-model="newNode.contentImg"></el-input>
+      <el-form-item label="内容">
+        <Upload
+          :imgUrl="contentImgUrl"
+          :imgName="nodeInfo.contentImg"
+          :imgType="'content'"
+          @uploadSuccessContent="uploadSuccessContent"
+        ></Upload>
       </el-form-item>
       <el-form-item label="颜色" prop="color" style="margin-bottom: 0">
         <el-input v-model="newNode.color"></el-input>
@@ -43,7 +52,7 @@ import Upload from "@/components/Upload.vue";
 
 export default {
   name: "NodeDialog",
-  props: ["nodeInfo", "modifyType"],
+  props: ["nodeInfo", "modifyType", "coverImgUrl", "contentImgUrl"],
   components: { Upload },
   setup(props, { emit }) {
     const newNodeForm = ref(null);
@@ -67,9 +76,6 @@ export default {
       group: [{ required: true, message: "请输入Group", trigger: "blur" }],
       material: [
         { required: true, message: "请输入Material", trigger: "blur" },
-      ],
-      coverImg: [
-        { required: true, message: "请输入Cover Image URL", trigger: "blur" },
       ],
       contentImg: [
         { required: true, message: "请输入Content Image URL", trigger: "blur" },
@@ -110,6 +116,15 @@ export default {
       });
     };
 
+    // 封面图片上传成功
+    const uploadSuccessCover = (res) => {
+      newNode.value.coverImg = res;
+    };
+    // 内容图片上传成功
+    const uploadSuccessContent = (res) => {
+      newNode.value.contentImg = res;
+    };
+
     // 返回
     const goBack = () => {
       emit("goBack");
@@ -121,6 +136,8 @@ export default {
       modifyNode,
       goBack,
       newNodeForm,
+      uploadSuccessCover,
+      uploadSuccessContent,
     };
   },
 };

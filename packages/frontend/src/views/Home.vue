@@ -11,6 +11,8 @@
         v-if="currentNode"
         :node="currentNode"
         :position="currentPosition"
+        :coverImgUrl="coverImgUrl"
+        :contentImgUrl="contentImgUrl"
         @focusOnNode="focusOnNode"
         @modifySuccess="initGraphData"
         ref="nodeInfoRef"
@@ -41,17 +43,30 @@ import {
   getNodeThreeObject,
   addPostProcessingEffects,
 } from "@/utils/init"; // 导入相关函数
+import { getObject } from "@/api/utils";
 
 export default {
   components: { NodeInfo },
   setup() {
     // 创建变量
-    const [Graph, currentNode, currentPosition, selectedNode, nodeInfoRef] = [
+    const [
+      Graph,
+      currentNode,
+      currentPosition,
+      selectedNode,
+      nodeInfoRef,
+      coverImgUrl,
+      contentImgUrl,
+      previousCoverImg,
+    ] = [
       ref(null),
       ref(null),
       ref(null),
       ref(null),
       ref(null),
+      ref(""),
+      ref(""),
+      ref(""),
     ];
     const initData = ref({
       nodes: [],
@@ -136,6 +151,22 @@ export default {
               node.z
             );
             selectedNode.value = node;
+            if (node.coverImg !== previousCoverImg.value) {
+              getObject({
+                filePath: node.coverImg,
+              }).then((res) => {
+                if (res.code === 200) {
+                  coverImgUrl.value = res.data;
+                }
+              });
+              getObject({
+                filePath: node.contentImg,
+              }).then((res) => {
+                if (res.code === 200) {
+                  contentImgUrl.value = res.data;
+                }
+              });
+            }
             currentNode.value = {
               id: node.id, // 节点信息
               coverImg: node.coverImg, // 节点封面图片
@@ -144,6 +175,7 @@ export default {
               material: node.material, // 节点材质
               group: node.group, // 节点分组
             };
+            previousCoverImg.value = node.coverImg;
             nextTick(() => {
               // 等待 DOM 更新
               if (nodeInfoRef.value && nodeInfoRef.value.$el) {
@@ -203,6 +235,9 @@ export default {
       focusOnNode,
       transitionName,
       initGraphData,
+      coverImgUrl,
+      contentImgUrl,
+      previousCoverImg,
     };
   },
 };

@@ -3,9 +3,10 @@
     ref="upload"
     class="upload-demo"
     action="http://localhost:5201/api/cos/upload"
-    :limit="1"
-    :on-exceed="handleExceed"
     :auto-upload="true"
+    :on-success="handleSuccess"
+    :file-list="fileList"
+    :before-upload="handleBeforeUpload"
   >
     <template #trigger>
       <el-button type="primary">选择文件</el-button>
@@ -14,30 +15,73 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 export default {
-  setup() {
+  props: ["imgUrl", "imgName", "imgType"],
+  setup(props, { emit }) {
     const upload = ref(null);
+    const fileList = ref([]); // 新增这一行，用于存储文件列表
+
+    // 如果有默认文件 URL，则更新 fileList
+    onMounted(() => {
+      if (props.imgUrl) {
+        fileList.value = [
+          {
+            name: props.imgName,
+            status: "success",
+            url: props.imgUrl,
+          },
+        ];
+      }
+    });
 
     const handleExceed = (files) => {
-      upload.value.clearFiles();
+      upload.value.clearFiles(); // 清除现有文件
+      fileList.value = []; // 清空 fileList
       const file = files[0];
-      upload.value.handleStart(file);
+      upload.value.submit(file); // 手动触发上传
+    };
+
+    const handleSuccess = (res, file) => {
+      if (props.imgType === "cover") {
+        emit("uploadSuccessCover", res.data);
+      } else {
+        emit("uploadSuccessContent", res.data);
+      }
+    };
+
+    const handleBeforeUpload = (file) => {
+      upload.value.clearFiles(); // 清除现有文件
+      fileList.value = []; // 清空 fileList
+      fileList.value.push(file); // 添加新文件
     };
 
     return {
       upload,
       handleExceed,
+      handleSuccess,
+      fileList,
+      handleBeforeUpload,
     };
   },
 };
 </script>
 
 <style scoped>
-.upload-demo{
-    background-color: red;
-    display: flex;
-    justify-content: flex-start;
+.upload-demo {
+  display: flex;
+  justify-content: flex-start;
+}
+.upload-demo /deep/.el-upload-list {
+  flex: 1;
+  margin-top: 0;
+}
+.upload-demo /deep/.el-upload-list .el-progress__text {
+  display: none;
+}
+
+.upload-demo /deep/.el-upload-list .el-upload-list__item {
+  margin-bottom: 0;
 }
 </style>

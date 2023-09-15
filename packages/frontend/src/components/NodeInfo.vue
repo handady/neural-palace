@@ -2,7 +2,7 @@
   <div :style="positionStyle" class="node-info">
     <div class="card">
       <div class="front" :style="frontStyle" @click="toggleFlip">
-        <img :src="node.coverImg" alt="front" />
+        <img :src="coverImgUrl" alt="front" />
       </div>
       <div class="back" :style="backStyle" @click="toggleFlip">
         <div class="back-content" v-if="!isModifyNode">
@@ -20,6 +20,8 @@
           @modifySuccess="modifySuccess"
           :nodeInfo="node"
           :modifyType="modifyType"
+          :coverImgUrl="coverImgUrl"
+          :contentImgUrl="contentImgUrl"
         ></NodeDialog>
       </div>
     </div>
@@ -34,7 +36,7 @@ import NodeDialog from "@/components/NodeDialog.vue";
 
 export default {
   name: "YourComponent",
-  props: ["node", "position"],
+  props: ["node", "position", "coverImgUrl", "contentImgUrl"],
   components: {
     NodeDialog,
   },
@@ -50,6 +52,7 @@ export default {
 
     onMounted(() => {
       const img = document.querySelector(".front img");
+      // 设置图片高度
       img.onload = () => {
         const card = document.querySelector(".card");
         card.style.height = `${img.height}px`;
@@ -130,7 +133,7 @@ export default {
       isModifyNode,
       goBack,
       modifyType,
-      modifySuccess
+      modifySuccess,
     };
   },
 };
