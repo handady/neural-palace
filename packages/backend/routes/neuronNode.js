@@ -11,39 +11,50 @@ router.get("/", (req, res) => {
 });
 
 // 添加节点
-router.post('/addNode', (req, res) => {
+router.post("/addNode", (req, res) => {
   const { id, group, material, coverImg, contentImg, color } = req.body;
 
-  const sql = 'INSERT INTO nodes (id, `group`, material, coverImg, contentImg, color) VALUES (?, ?, ?, ?, ?, ?)';
+  const sql =
+    "INSERT INTO nodes (id, `group`, material, coverImg, contentImg, color) VALUES (?, ?, ?, ?, ?, ?)";
 
-  connection.query(sql, [id, group, material, coverImg, contentImg, color], (err, result) => {
-    if (err) res.standard(500, null, err);
-    else res.standard(200, { id }, '节点添加成功');
-  });
+  connection.query(
+    sql,
+    [id, group, material, coverImg, contentImg, color],
+    (err, result) => {
+      if (err) res.standard(500, null, err);
+      else res.standard(200, { id }, "节点添加成功");
+    }
+  );
 });
 
 // 删除节点
-router.post('/deleteNode', (req, res) => {
+router.post("/deleteNode", (req, res) => {
   const { id } = req.body;
 
-  const sql = 'DELETE FROM nodes WHERE id = ?';
+  const sql = "DELETE FROM nodes WHERE id = ?";
 
   connection.query(sql, [id], (err, result) => {
     if (err) res.standard(500, null, err);
-    else res.standard(200, { id }, '节点删除成功');
+    else res.standard(200, { id }, "节点删除成功");
   });
 });
 
 // 修改节点
-router.post('/updateNode', (req, res) => {
-  const { id, group, material, coverImg, contentImg, color, originId } = req.body;
+router.post("/updateNode", (req, res) => {
+  const { id, group, material, coverImg, contentImg, color, originId } =
+    req.body;
 
-  const sql = 'UPDATE nodes SET `group` = ?, material = ?, coverImg = ?, contentImg = ?, color = ?, id = ? WHERE id = ?';
+  const sql =
+    "UPDATE nodes SET `group` = ?, material = ?, coverImg = ?, contentImg = ?, color = ?, id = ? WHERE id = ?";
 
-  connection.query(sql, [group, material, coverImg, contentImg, color, id, originId], (err, result) => {
-    if (err) res.standard(500, null, err);
-    else res.standard(200, { id }, '节点修改成功');
-  });
+  connection.query(
+    sql,
+    [group, material, coverImg, contentImg, color, id, originId],
+    (err, result) => {
+      if (err) res.standard(500, null, err);
+      else res.standard(200, { id }, "节点修改成功");
+    }
+  );
 });
 
 module.exports = router;

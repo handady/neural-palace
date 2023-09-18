@@ -36,8 +36,8 @@ function preloadMaterials(textureLoader, materialMap) {
   return loadedMaterials;
 }
 // 设置节点颜色
-function getNodeColor(node, nodeColorScale) {
-  return nodeColorScale(node.id);
+function getNodeColor(nodeColor, nodeColorScale) {
+  return nodeColorScale(nodeColor);
 }
 // 创建连接线
 function createLinkObject(link, nodeColorScale) {
@@ -56,6 +56,7 @@ function createLinkObject(link, nodeColorScale) {
     "position",
     new THREE.BufferAttribute(new Float32Array(2 * 3), 3)
   );
+  console.log(colors)
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
   return new THREE.Line(geometry, material);
@@ -71,7 +72,7 @@ function getNodeThreeObject(node, loadedMaterials) {
         displacementScale: 0.2,
         metalnessMap: materials.metallic,
       })
-    : new THREE.MeshStandardMaterial({ color: "red" });
+    : new THREE.MeshStandardMaterial({ color: node.color });
 
   return new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), sphereMaterial);
 }

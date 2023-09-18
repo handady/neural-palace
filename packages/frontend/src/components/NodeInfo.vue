@@ -32,10 +32,13 @@
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 import NodeDialog from "@/components/NodeDialog.vue";
+import { deleteNeuronNode } from "@/api/neuronNode";
+import { deleteNeuronLink } from "@/api/neuronLink";
 
 export default {
-  name: "YourComponent",
+  name: "NodeInfo",
   props: ["node", "position", "coverImgUrl", "contentImgUrl"],
   components: {
     NodeDialog,
@@ -73,6 +76,26 @@ export default {
       if (card.value) {
         card.value.style.minHeight = "350px";
         card.value.style.minWidth = "250px";
+      }
+    };
+    // 删除节点
+    const deleteNode = async () => {
+      try {
+        const [linkRes, nodeRes] = await Promise.all([
+          deleteNeuronLink(props.node.id),
+          deleteNeuronNode(props.node.id),
+        ]);
+
+        if (linkRes.code === 200 && nodeRes.code === 200) {
+          modifySuccess();
+          ElMessage({ message: "删除成功", type: "success" });
+        } else {
+          // 处理错误情况
+          ElMessage({ message: "删除失败", type: "error" });
+        }
+      } catch (error) {
+        // 网络错误或其他异常情况
+        ElMessage({ message: "删除失败", type: "error" });
       }
     };
     // 子节点函数
@@ -134,6 +157,7 @@ export default {
       goBack,
       modifyType,
       modifySuccess,
+      deleteNode,
     };
   },
 };

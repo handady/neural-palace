@@ -29,6 +29,7 @@ import * as d3 from "d3";
 import * as THREE from "three";
 import { createStars, createUniverse } from "@/utils/functions"; // 导入相关函数
 import { getNeuronNode } from "@/api/neuronNode";
+import { getNeuronLink } from "@/api/neuronLink";
 import NodeInfo from "@/components/NodeInfo.vue";
 import "animate.css";
 import universeImg from "@/assets/银河全景.jpg";
@@ -107,14 +108,28 @@ export default {
     };
 
     // 初始化数据
-    const initGraphData = () => {
-      getNeuronNode().then((res) => {
-        if (res.code === 200) {
-          const nodes = res.data;
-          initData.value.nodes = nodes;
+    const initGraphData = async () => {
+      const nodePromise = getNeuronNode();
+      const linkPromise = getNeuronLink();
+
+      try {
+        const [nodeRes, linkRes] = await Promise.all([
+          nodePromise,
+          linkPromise,
+        ]);
+        if (nodeRes.code === 200) {
+          initData.value.nodes = nodeRes.data;
+        }
+        if (linkRes.code === 200) {
+          initData.value.links = linkRes.data;
+        }
+        // 一次性更新图数据
+        if (nodeRes.code === 200 && linkRes.code === 200) {
           Graph.value.graphData(initData.value);
         }
-      });
+      } catch (error) {
+        console.error("Failed to fetch graph data: ", error);
+      }
     };
 
     watch(currentNode, (newVal, oldVal) => {
@@ -136,7 +151,7 @@ export default {
       )
         .showNavInfo(false)
         .nodeResolution(16)
-        .nodeColor((node) => getNodeColor(node, nodeColorScale))
+        .nodeColor((node) => getNodeColor(node.color, nodeColorScale))
         .linkThreeObject((link) => createLinkObject(link, nodeColorScale))
         .backgroundColor("rgba(0,0,0,0)")
         .onNodeClick((node) => {
@@ -263,7 +278,7 @@ function animateScene(Graph, universeMesh, starMesh) {
 
     // 旋转
     starMesh.forEach((mesh) => {
-      mesh.rotation.y += 0.0001;
+      mesh.rotation.y += 0.00005;
     });
     universeMesh.rotation.y += 0.00001;
 

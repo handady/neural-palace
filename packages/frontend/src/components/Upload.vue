@@ -7,6 +7,7 @@
     :on-success="handleSuccess"
     :file-list="fileList"
     :before-upload="handleBeforeUpload"
+    :on-remove="handleRemove"
   >
     <template #trigger>
       <el-button type="primary">选择文件</el-button>
@@ -36,13 +37,6 @@ export default {
       }
     });
 
-    const handleExceed = (files) => {
-      upload.value.clearFiles(); // 清除现有文件
-      fileList.value = []; // 清空 fileList
-      const file = files[0];
-      upload.value.submit(file); // 手动触发上传
-    };
-
     const handleSuccess = (res, file) => {
       if (props.imgType === "cover") {
         emit("uploadSuccessCover", res.data);
@@ -57,12 +51,20 @@ export default {
       fileList.value.push(file); // 添加新文件
     };
 
+    const handleRemove = (file) => {
+      if (props.imgType === "cover") {
+        emit("uploadSuccessCover", '');
+      } else {
+        emit("uploadSuccessContent", '');
+      }
+    };
+
     return {
       upload,
-      handleExceed,
       handleSuccess,
       fileList,
       handleBeforeUpload,
+      handleRemove,
     };
   },
 };
