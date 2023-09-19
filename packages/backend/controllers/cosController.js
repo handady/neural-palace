@@ -46,7 +46,7 @@ const getFromCos = (req, res) => {
       Region: process.env.COS_REGION,
       Key: filePath,
       Sign: true,
-      Expires: 900,
+      Expires: 3600,
     },
     (err, data) => {
       if (err) {

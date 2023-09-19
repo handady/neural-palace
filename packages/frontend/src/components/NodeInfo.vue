@@ -119,7 +119,8 @@ export default {
     };
     // 进入节点
     const enterNode = () => {
-      store.commit("setContentUrl", props.node.contentImg);
+      store.commit("setContentUrl", props.contentImgUrl);
+      store.commit("setId", props.node.id);
       router.push({ name: "Neuron" });
     };
     // 计算位置
