@@ -25,7 +25,6 @@
 <script>
 import { onMounted, ref, onUnmounted, watch, nextTick } from "vue";
 import ForceGraph3D from "3d-force-graph";
-import * as d3 from "d3";
 import * as THREE from "three";
 import { createStars, createUniverse } from "@/utils/functions"; // 导入相关函数
 import { getNeuronNode } from "@/api/neuronNode";
@@ -39,7 +38,6 @@ import {
   createLoadingManager,
   updateSize,
   preloadMaterials,
-  getNodeColor,
   createLinkObject,
   getNodeThreeObject,
   addPostProcessingEffects,
@@ -58,7 +56,7 @@ export default {
       nodeInfoRef,
       coverImgUrl,
       contentImgUrl,
-      previousCoverImg,
+      previousCoverId,
     ] = [
       ref(null),
       ref(null),
@@ -73,7 +71,6 @@ export default {
       nodes: [],
       links: [],
     });
-    const nodeColorScale = d3.scaleOrdinal(d3.schemeRdYlGn[4]);
     const transitionName = ref("animate__animated");
     // Handlers and Utils
     const manager = createLoadingManager();
@@ -151,8 +148,7 @@ export default {
       )
         .showNavInfo(false)
         .nodeResolution(16)
-        .nodeColor((node) => getNodeColor(node.color, nodeColorScale))
-        .linkThreeObject((link) => createLinkObject(link, nodeColorScale))
+        .linkThreeObject((link) => createLinkObject(link, initData.value.nodes))
         .backgroundColor("rgba(0,0,0,0)")
         .onNodeClick((node) => {
           focusOnNode();
@@ -166,7 +162,9 @@ export default {
               node.z
             );
             selectedNode.value = node;
-            if (node.coverImg !== previousCoverImg.value) {
+            if (node.id !== previousCoverId.value) {
+              coverImgUrl.value = "";
+              contentImgUrl.value = "";
               getObject({
                 filePath: node.coverImg,
               }).then((res) => {
@@ -190,7 +188,7 @@ export default {
               material: node.material, // 节点材质
               group: node.group, // 节点分组
             };
-            previousCoverImg.value = node.coverImg;
+            previousCoverId.value = node.id;
             nextTick(() => {
               // 等待 DOM 更新
               if (nodeInfoRef.value && nodeInfoRef.value.$el) {
@@ -252,7 +250,7 @@ export default {
       initGraphData,
       coverImgUrl,
       contentImgUrl,
-      previousCoverImg,
+      previousCoverId,
     };
   },
 };

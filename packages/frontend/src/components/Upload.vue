@@ -75,15 +75,15 @@ export default {
   display: flex;
   justify-content: flex-start;
 }
-.upload-demo /deep/.el-upload-list {
+.upload-demo :deep(.el-upload-list) {
   flex: 1;
   margin-top: 0;
 }
-.upload-demo /deep/.el-upload-list .el-progress__text {
+.upload-demo :deep(.el-upload-list .el-progress__text) {
   display: none;
 }
 
-.upload-demo /deep/.el-upload-list .el-upload-list__item {
+.upload-demo :deep(.el-upload-list .el-upload-list__item) {
   margin-bottom: 0;
 }
 </style>

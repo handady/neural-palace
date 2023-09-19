@@ -106,49 +106,53 @@ export default {
     const handleResponse = async (res, message) => {
       if (res.code === 200) {
         ElMessage({ message, type: "success" });
-        if (!isEdit) {
-          newNode.value = {
-            id: "",
-            group: 0,
-            material: "",
-            coverImg: "",
-            contentImg: "",
-            color: "",
-          };
-        }
-        return true; // 成功处理
+        return true;
       }
-      return false; // 处理失败
+      return false;
     };
 
-    // 添加或修改节点
+    // 重置 newNode
+    const resetNewNode = () => {
+      newNode.value = {
+        id: "",
+        group: 0,
+        material: "",
+        coverImg: "",
+        contentImg: "",
+        color: "",
+      };
+    };
+
     const modifyNode = async () => {
-      newNodeForm.value.validate(async (valid) => {
-        if (!valid) return ElMessage.error("操作失败");
+      const valid = await newNodeForm.value.validate();
+      if (!valid) return ElMessage.error("操作失败");
 
-        const apiCall = isEdit ? updateNeuronNode : addNeuronNode;
-        const message = isEdit ? "修改成功" : "添加成功";
-        const payload = isEdit
-          ? { ...newNode.value, originId: props.nodeInfo.id }
-          : newNode.value;
+      const isUpdate = Boolean(isEdit);
+      const operation = isUpdate ? "修改" : "添加";
+      const apiCall = isUpdate ? updateNeuronNode : addNeuronNode;
+      const linkCall = isUpdate ? updateNeuronLink : addNeuronLink;
 
-        const res1 = await apiCall(payload);
-        const isSuccess = await handleResponse(res1, message);
+      const payload = {
+        ...newNode.value,
+        originId: isUpdate ? props.nodeInfo.id : undefined,
+      };
 
-        if (!isEdit && isSuccess) {
-          const res2 = await addNeuronLink({
-            source: props.nodeInfo.id,
-            target: newNode.value.id,
-            value: 1,
-          });
-          // 你可以选择处理 res2
-          if (res2 /* 判断成功 */) {
-            emit("modifySuccess");
-          }
-        } else if (isSuccess) {
-          emit("modifySuccess");
-        }
-      });
+      const cachedId = newNode.value.id; // 缓存 ID
+
+      const nodeIdRes = await apiCall(payload);
+      const isSuccess = await handleResponse(nodeIdRes, `${operation}成功`);
+
+      if (!isSuccess) return;
+
+      if (!isUpdate) resetNewNode();
+
+      const linkPayload = isUpdate
+        ? { originId: props.nodeInfo.id, currentId: cachedId }
+        : { source: props.nodeInfo.id, target: cachedId, value: 1 };
+
+      const linkRes = await linkCall(linkPayload);
+
+      if (linkRes /* 判断成功 */) emit("modifySuccess");
     };
 
     // 封面图片上传成功

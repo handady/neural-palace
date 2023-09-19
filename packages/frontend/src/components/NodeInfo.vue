@@ -1,5 +1,6 @@
 <template>
   <div :style="positionStyle" class="node-info">
+    <div class="mask" v-if="isModifyNode"></div>
     <div class="card">
       <div class="front" :style="frontStyle" @click="toggleFlip">
         <img :src="coverImgUrl" alt="front" />
@@ -164,6 +165,14 @@ export default {
 </script>
 
 <style scoped>
+.mask {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  z-index: 0;
+  transition: background 0.6s linear;
+}
 .node-info {
   position: fixed;
   z-index: 100;

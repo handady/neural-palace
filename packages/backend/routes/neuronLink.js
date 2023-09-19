@@ -54,17 +54,19 @@ router.post("/deleteLink", (req, res) => {
 
 // 修改节点连接线
 router.post("/updateLink", (req, res) => {
-  const { id, source, target, value, originId } = req.body;
+  const { originId, currentId } = req.body;
 
-  const sql =
-    "UPDATE links SET source = ?, target = ?, value = ?, id = ? WHERE id = ?";
+  const sql = `UPDATE links 
+       SET source = CASE WHEN source = ? THEN ? ELSE source END,
+           target = CASE WHEN target = ? THEN ? ELSE target END
+       WHERE source = ? OR target = ?`;
 
   connection.query(
     sql,
-    [source, target, value, id, originId],
+    [originId, currentId, originId, currentId, originId, originId],
     (err, result) => {
       if (err) res.standard(500, null, err);
-      else res.standard(200, { id }, "节点连接线修改成功");
+      else res.standard(200, { id: currentId }, "节点连接线修改成功");
     }
   );
 });

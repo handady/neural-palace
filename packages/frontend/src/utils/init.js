@@ -35,16 +35,17 @@ function preloadMaterials(textureLoader, materialMap) {
   }
   return loadedMaterials;
 }
-// 设置节点颜色
-function getNodeColor(nodeColor, nodeColorScale) {
-  return nodeColorScale(nodeColor);
-}
 // 创建连接线
-function createLinkObject(link, nodeColorScale) {
+function createLinkObject(link, nodes) {
+  const sourceNode = nodes.find((node) => node.id === link.source);
+  const targetNode = nodes.find((node) => node.id === link.target);
+
+  const sourceColor = sourceNode ? sourceNode.color : [0, 0, 0]; // 默认黑色
+  const targetColor = targetNode ? targetNode.color : [0, 0, 0]; // 默认黑色
+
   const colors = new Float32Array(
     [].concat(
-      ...[link.source, link.target]
-        .map(nodeColorScale)
+      ...[sourceColor, targetColor]
         .map(d3.color)
         .map(({ r, g, b }) => [r, g, b].map((v) => v / 255))
     )
@@ -56,7 +57,6 @@ function createLinkObject(link, nodeColorScale) {
     "position",
     new THREE.BufferAttribute(new Float32Array(2 * 3), 3)
   );
-  console.log(colors)
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
   return new THREE.Line(geometry, material);
@@ -95,7 +95,6 @@ export {
   createLoadingManager,
   updateSize,
   preloadMaterials,
-  getNodeColor,
   createLinkObject,
   getNodeThreeObject,
   addPostProcessingEffects,
