@@ -57,4 +57,43 @@ router.post("/updateNode", (req, res) => {
   );
 });
 
+// 提交节点内容
+router.post("/submitNodeContent", (req, res) => {
+  const data = req.body;
+  const promises = data.map((item) => {
+    return new Promise((resolve, reject) => {
+      const { id, position_index, relativeX, relativeY } = item;
+      const sql =
+        "INSERT INTO node_positions (id, position_index, relativeX, relativeY) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE relativeX = VALUES(relativeX), relativeY = VALUES(relativeY)";
+      connection.query(
+        sql,
+        [id, position_index, relativeX, relativeY],
+        (err, result) => {
+          if (err) reject(err);
+          else resolve({ id, message: "节点内容提交成功" });
+        }
+      );
+    });
+  });
+
+  Promise.all(promises)
+    .then((results) => {
+      res.standard(200, results, "所有节点内容提交成功");
+    })
+    .catch((err) => {
+      res.standard(500, null, err);
+    });
+});
+
+// 获取节点内容
+router.post("/getNodeContent", (req, res) => {
+  const { id } = req.body;
+
+  const sql = "SELECT * FROM node_positions WHERE id = ?";
+  connection.query(sql, [id], (err, rows) => {
+    if (err) res.standard(500, null, err);
+    else res.standard(200, rows, "获取成功");
+  });
+});
+
 module.exports = router;
