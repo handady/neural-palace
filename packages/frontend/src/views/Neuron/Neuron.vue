@@ -19,6 +19,9 @@
             <HotSpot
               v-if="showHotSpot[position.position_index]"
               :position="position"
+              @hideSpot="toggleSpot(position.position_index)"
+              @saveTransformedKnowledge="saveTransformedKnowledge"
+              @saveOriginalKnowledge="saveOriginalKnowledge"
             />
           </transition>
         </div>
@@ -39,6 +42,9 @@
           <HotSpot
             v-if="showHotSpot[position.position_index]"
             :position="position"
+            @hideSpot="toggleSpot(position.position_index)"
+            @saveTransformedKnowledge="saveTransformedKnowledge"
+            @saveOriginalKnowledge="saveOriginalKnowledge"
           />
         </transition>
       </div>
@@ -63,6 +69,10 @@ import {
   submitNeuronNodeContent,
   getNeuronNodeContent,
 } from "@/api/neuronNode";
+import {
+  updateTransformedKnowledge,
+  updateOriginalKnowledge,
+} from "@/api/neuronPositions";
 import { ElMessage } from "element-plus";
 import HotSpot from "./HotSpot.vue";
 import "animate.css";
@@ -97,6 +107,7 @@ export default {
         }
       }
     }
+
     // 记录位置
     function recordPosition(event) {
       if (!recordFlag.value || positions.value.length >= 10) return;
@@ -159,13 +170,44 @@ export default {
       }
     };
 
-    onMounted(() => {
+    // 更新markdown富文本
+    const saveKnowledge = (updateFunc, field, value) => {
+      const payload = {
+        id: contentId,
+        position_index: value.position_index,
+      };
+      payload[field] = value[`${field}Value`];
+
+      updateFunc(payload).then((res) => {
+        const message = res.code === 200 ? "更新成功" : "更新失败";
+        ElMessage[res.code === 200 ? "success" : "error"](message);
+        if (res.code === 200) {
+          init();
+        }
+      });
+    };
+
+    const saveTransformedKnowledge = (value) => {
+      saveKnowledge(updateTransformedKnowledge, "transformedKnowledge", value);
+    };
+
+    const saveOriginalKnowledge = (value) => {
+      saveKnowledge(updateOriginalKnowledge, "originalKnowledge", value);
+    };
+
+    // 初始化数据
+    const init = () => {
+      // 获取数据
       getNeuronNodeContent(contentId).then((res) => {
         if (res.code === 200) {
           positions.value = res.data;
           addVisibleIndex.value = positions.value.length - 1;
         }
       });
+    };
+
+    onMounted(() => {
+      init();
       const debounceHandleWheel = _.debounce(handleWheel, 100);
       window.addEventListener("wheel", debounceHandleWheel);
     });
@@ -186,6 +228,8 @@ export default {
       submit,
       showHotSpot,
       toggleSpot,
+      saveTransformedKnowledge,
+      saveOriginalKnowledge,
     };
   },
 };

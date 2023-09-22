@@ -10,9 +10,6 @@ axios.defaults.baseURL = "http://localhost:5201";
 // http request 拦截器
 axios.interceptors.request.use(
   (config) => {
-    config.headers = {
-      "Content-Type": "application/json;charset=UTF-8",
-    };
     return config;
   },
   (error) => {

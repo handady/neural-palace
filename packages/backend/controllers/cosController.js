@@ -30,7 +30,14 @@ const uploadToCos = (req, res) => {
         res.standard(500, null, "上传失败");
       } else {
         console.log("File uploaded successfully:", data);
-        res.standard(200, filePath, "上传成功");
+        res.standard(
+          200,
+          {
+            filePath: filePath,
+            fileLocation: data.Location,
+          },
+          "上传成功"
+        );
       }
     }
   );

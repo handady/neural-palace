@@ -3,11 +3,12 @@ import request from "@/router/axios-config.js";
 // 上传对象
 export const uploadObject = (file) => {
   const formData = new FormData();
+  formData.append("file", file);
+  formData.append("fileName", file.name);
 
   return request({
-    url: "/api/cos/upload",
+    url: "/api/cos/uploadFile",
     method: "post",
-    headers: { "Content-Type": "multipart/form-data" },
     data: formData,
   });
 };

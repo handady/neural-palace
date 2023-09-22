@@ -3,7 +3,7 @@ const router = express.Router();
 const connection = require("../db/mysqlConnection"); // 导入连接
 
 // 获取所有节点连接线
-router.get("/", (req, res) => {
+router.get("/getLink", (req, res) => {
   connection.query("SELECT * FROM links", (err, rows) => {
     if (err) res.standard(500, null, err);
     else res.standard(200, rows, "获取成功");

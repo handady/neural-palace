@@ -39,9 +39,9 @@ export default {
 
     const handleSuccess = (res, file) => {
       if (props.imgType === "cover") {
-        emit("uploadSuccessCover", res.data);
+        emit("uploadSuccessCover", res.data.fileName);
       } else {
-        emit("uploadSuccessContent", res.data);
+        emit("uploadSuccessContent", res.data.fileName);
       }
     };
 
@@ -53,9 +53,9 @@ export default {
 
     const handleRemove = (file) => {
       if (props.imgType === "cover") {
-        emit("uploadSuccessCover", '');
+        emit("uploadSuccessCover", "");
       } else {
-        emit("uploadSuccessContent", '');
+        emit("uploadSuccessContent", "");
       }
     };
 

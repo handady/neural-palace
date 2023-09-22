@@ -3,7 +3,7 @@ import request from "@/router/axios-config.js";
 // 获取节点连接线
 export const getNeuronLink = () => {
   return request({
-    url: "/api/neuronLink",
+    url: "/api/neuronLink/getLink",
     method: "get",
   });
 };
