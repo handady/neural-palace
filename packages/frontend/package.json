@@ -15,6 +15,7 @@
     "core-js": "^3.8.3",
     "d3": "^7.8.5",
     "element-plus": "^2.3.12",
+    "interactjs": "^1.10.19",
     "mavon-editor": "^3.0.1",
     "swiper": "^10.2.0",
     "three": "^0.154.0",

@@ -11,7 +11,8 @@
           <div
             v-if="!showHotSpot[position.position_index]"
             :style="getFixedPosition(position)"
-            class="fixed-marker"
+            class="fixed-marker draggable"
+            :data-index="position.position_index"
             @click.stop="toggleSpot(position.position_index)"
           ></div>
 
@@ -34,7 +35,8 @@
       >
         <div
           v-if="!showHotSpot[position.position_index]"
-          class="fixed-marker"
+          class="fixed-marker draggable"
+          :data-index="position.position_index"
           @click.stop="toggleSpot(position.position_index)"
         ></div>
 
@@ -50,10 +52,21 @@
       </div>
     </template>
     <div class="recordBtn">
-      <el-button type="primary" @click.stop="currentVisibleIndex = 10">
+      <el-button
+        v-if="currentVisibleIndex < positions.length - 1"
+        type="primary"
+        @click.stop="currentVisibleIndex = positions.length - 1"
+      >
         显示全部
       </el-button>
-      <el-button type="primary" @click.stop="submit"> 提交 </el-button>
+      <el-button
+        v-if="currentVisibleIndex === positions.length - 1"
+        type="primary"
+        @click.stop="currentVisibleIndex = -1"
+      >
+        隐藏全部
+      </el-button>
+      <el-button type="primary" @click.stop="submit"> 保存状态 </el-button>
       <el-button type="primary" @click.stop="recordFlag = !recordFlag">
         {{ recordFlag ? "停止记录" : "开始记录" }}
       </el-button>
@@ -77,6 +90,7 @@ import { ElMessage } from "element-plus";
 import HotSpot from "./HotSpot.vue";
 import "animate.css";
 import _ from "lodash";
+import interact from "interactjs";
 
 export default {
   name: "Neuron",
@@ -86,7 +100,10 @@ export default {
     const contentUrl = store.state.contentUrl;
     const contentId = store.state.id;
     const recordFlag = ref(false);
+    const interactFlag = ref(false); // 自由拖动的时候阀门
     const positions = ref([]); // 用于保存物品的百分比坐标
+    const currentVisibleIndex = ref(-1); // 当前可见的物品
+    const addVisibleIndex = ref(-1); 
 
     const backgroundStyle = computed(() => {
       return {
@@ -95,12 +112,8 @@ export default {
       };
     });
 
-    const currentVisibleIndex = ref(-1);
-    const addVisibleIndex = ref(-1);
-
     // 监听鼠标滚轮事件
     function handleWheel(event) {
-      console.log(event.deltaY);
       if (event.deltaY > 0) {
         if (currentVisibleIndex.value < positions.value.length - 1) {
           currentVisibleIndex.value++;
@@ -161,12 +174,14 @@ export default {
     // showHotSpot相关
     const showHotSpot = reactive({});
     const toggleSpot = (index) => {
-      // 如果该 index 不存在于 showHotSpot，或者为 false，则设置为 true
-      if (!showHotSpot[index]) {
-        showHotSpot[index] = true;
-      } else {
-        // 如果已经是 true，则设置为 false
-        showHotSpot[index] = false;
+      if (!interactFlag.value) {
+        // 如果该 index 不存在于 showHotSpot，或者为 false，则设置为 true
+        if (!showHotSpot[index]) {
+          showHotSpot[index] = true;
+        } else {
+          // 如果已经是 true，则设置为 false
+          showHotSpot[index] = false;
+        }
       }
     };
 
@@ -210,6 +225,37 @@ export default {
       init();
       const debounceHandleWheel = _.debounce(handleWheel, 100);
       window.addEventListener("wheel", debounceHandleWheel);
+      // 初始化interact.js
+      interact(".draggable").draggable({
+        // 拖动的配置选项
+        listeners: {
+          start(event) {
+            interactFlag.value = true;
+          },
+          move(event) {
+            const target = event.target;
+            const index = target.getAttribute("data-index");
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            const relativeX = (event.clientX / viewportWidth) * 100;
+            const relativeY = (event.clientY / viewportHeight) * 100;
+
+            const pos = positions.value.find(
+              (p) => p.position_index === +index
+            );
+            if (pos) {
+              pos.relativeX = relativeX;
+              pos.relativeY = relativeY;
+            }
+          },
+          end(event) {
+            setTimeout(() => {
+              interactFlag.value = false;
+            }, 500);
+          },
+        },
+      });
     });
 
     onUnmounted(() => {
@@ -285,5 +331,9 @@ export default {
   -webkit-animation: sonar 1500ms ease-out infinite;
   animation: sonar 1500ms ease-out infinite;
   cursor: pointer;
+}
+
+.draggable {
+  cursor: pointer !important;
 }
 </style>
