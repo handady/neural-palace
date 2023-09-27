@@ -103,7 +103,7 @@ export default {
     const interactFlag = ref(false); // 自由拖动的时候阀门
     const positions = ref([]); // 用于保存物品的百分比坐标
     const currentVisibleIndex = ref(-1); // 当前可见的物品
-    const addVisibleIndex = ref(-1); 
+    const addVisibleIndex = ref(-1);
 
     const backgroundStyle = computed(() => {
       return {
@@ -123,21 +123,19 @@ export default {
 
     // 记录位置
     function recordPosition(event) {
-      if (!recordFlag.value || positions.value.length >= 10) return;
+      if (!recordFlag.value || positions.value.length >= 10) {
+        return;
+      }
+
       const rect = event.currentTarget.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const width = rect.width;
-      const height = rect.height;
+      const { left, top, width, height } = rect;
+      const { clientX, clientY } = event;
 
-      // 计算相对坐标（百分比）
-      const relativeX = (x / width) * 100;
-      const relativeY = (y / height) * 100;
+      const relativeX = ((clientX - left) / width) * 100;
+      const relativeY = ((clientY - top) / height) * 100;
 
-      // 获取下一个可用的索引
       const nextIndex = getNextIndex(positions.value);
 
-      // 保存相对坐标
       positions.value.push({
         id: contentId,
         position_index: nextIndex,

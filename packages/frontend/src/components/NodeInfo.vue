@@ -7,13 +7,34 @@
       </div>
       <div class="back" :style="backStyle" @click="toggleFlip">
         <div class="back-content" v-if="!isModifyNode">
-          <!-- <button @click.stop="modifyNode('add')">点我增加</button>
-          <button @click.stop="modifyNode('edit')">点我修改</button>
-          <button @click.stop="deleteNode">点我删除</button>
-          <button @click.stop="focusOnNode">点我聚焦</button>
-          <button @click.stop="enterNode">点我进入</button> -->
-          <div class="btn-water-wrap">
-            <input type="button" value="btn3" class="btn-water" />
+          <div class="row">
+            <WaterButton
+              :value="'点我增加'"
+              @click.stop="modifyNode('add')"
+              colorType="pink"
+              style="margin-right: 10%; margin-bottom: 20%"
+            />
+            <WaterButton
+              :value="'点我修改'"
+              @click.stop="modifyNode('edit')"
+              colorType="blue"
+            />
+          </div>
+          <div class="row">
+            <WaterButton
+              :value="'点我聚焦'"
+              @click.stop="focusOnNode"
+              colorType="green"
+              style="margin-right: 10%; margin-bottom: 20%"
+            />
+            <WaterButton
+              :value="'点我删除'"
+              @click.stop="deleteNode"
+              colorType="red"
+            />
+          </div>
+          <div class="row square-btn">
+            <SquareButton :value="'点我进入'" @click.stop="enterNode" />
           </div>
         </div>
         <NodeDialog
@@ -37,6 +58,8 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import NodeDialog from "@/components/NodeDialog.vue";
+import WaterButton from "./WaterButton.vue";
+import SquareButton from "./SquareButton.vue";
 import { deleteNeuronNode } from "@/api/neuronNode";
 import { deleteNeuronLink } from "@/api/neuronLink";
 
@@ -45,6 +68,8 @@ export default {
   props: ["node", "position", "coverImgUrl", "contentImgUrl"],
   components: {
     NodeDialog,
+    WaterButton,
+    SquareButton,
   },
   setup(props, { emit }) {
     // 创建变量
@@ -221,56 +246,26 @@ export default {
   background: #f1f1f1;
   transform: perspective(600px) rotateY(180deg);
 }
+
+.row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 5%;
+}
+
 .back-content {
   color: #2c3e50;
   text-align: center;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 5%;
 }
 
-.btn-water {
-  height: 100px;
-  width: 100px;
-  background-color: rgba(253, 188, 239, 0.897);
-  color: #fff;
-  font-weight: 700;
-  font-size: 100%;
-  line-height: 100%;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 10px 10px 30px 3px rgb(255, 153, 233),
-    -1px -1px 10px 2px rgb(255, 255, 255),
-    10px 10px 20px 3px rgb(245, 165, 224) inset,
-    -6px -6px 10px 3px rgb(255, 215, 248) inset;
-}
-
-.btn-water-wrap {
-  position: relative;
-  height: 100px;
-  width: 100px;
-}
-
-.btn-water-wrap::before {
-  content: "";
-  position: absolute;
-  top: 21%;
-  left: 16%;
-  width: 14%;
-  height: 14%;
-  border-radius: 50%;
-  background-color: rgb(255, 226, 251);
-  filter: blur(0.5px);
-}
-
-.btn-water-wrap::after {
-  content: "";
-  position: absolute;
-  top: 12.5%;
-  left: 32.5%;
-  width: 7%;
-  height: 7%;
-  border-radius: 50%;
-  background-color: rgb(255, 223, 251);
-  filter: blur(0.5px);
+.square-btn {
+  padding: 0 2%;
 }
 </style>

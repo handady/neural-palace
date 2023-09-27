@@ -6,6 +6,18 @@
         <div id="progress"></div>
       </div>
     </div>
+    <div class="newGroup">
+      <WaterButton
+        :value="'新增组'"
+        colorType="blue"
+        @click="showAddNewGroup = true"
+      />
+    </div>
+    <AddNewGroup
+      class="addNewGroup"
+      v-if="showAddNewGroup"
+      @cancel="showAddNewGroup = false"
+    />
     <transition :name="transitionName">
       <NodeInfo
         v-if="currentNode"
@@ -30,6 +42,8 @@ import { createStars, createUniverse } from "@/utils/functions"; // 导入相关
 import { getNeuronNode } from "@/api/neuronNode";
 import { getNeuronLink } from "@/api/neuronLink";
 import NodeInfo from "@/components/NodeInfo.vue";
+import WaterButton from "../components/WaterButton.vue";
+import AddNewGroup from "@/components/AddNewGroup.vue";
 import "animate.css";
 import universeImg from "@/assets/银河全景.jpg";
 import materialMap from "@/configs/materialConfigs"; // 单独配置的材质配置文件
@@ -45,7 +59,7 @@ import {
 import { getObject } from "@/api/utils";
 
 export default {
-  components: { NodeInfo },
+  components: { NodeInfo, WaterButton, AddNewGroup },
   setup() {
     // 创建变量
     const [
@@ -57,6 +71,7 @@ export default {
       coverImgUrl,
       contentImgUrl,
       previousCoverId,
+      showAddNewGroup,
     ] = [
       ref(null),
       ref(null),
@@ -66,6 +81,7 @@ export default {
       ref(""),
       ref(""),
       ref(""),
+      ref(false),
     ];
     const initData = ref({
       nodes: [],
@@ -251,6 +267,7 @@ export default {
       coverImgUrl,
       contentImgUrl,
       previousCoverId,
+      showAddNewGroup,
     };
   },
 };
@@ -336,5 +353,28 @@ function animateScene(Graph, universeMesh, starMesh) {
 .zoomOut-enter-active,
 .zoomOut-leave-active {
   animation: zoomOut 0.5s;
+}
+.newGroup {
+  position: fixed;
+  z-index: 10;
+  top: 5%;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addNewGroup {
+  position: fixed;
+  z-index: 10;
+  width: 30%;
+  max-width: 512px;
+  max-height: 768px;
+  height: 70%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

@@ -64,37 +64,33 @@ export default {
     const customToolbars = {
       preview: true,
       readmodel: true,
-      undo: true, // 上一步
-      redo: true, // 下一步
-      trash: true, // 清空
-      imagelink: true, // 图片链接
-      save: true, // 保存（触发events中的save事件）
+      imagelink: true,
+      undo: true,
+      redo: true,
+      trash: true,
+      save: true,
     };
 
-    // 图片上传值自己的服务器
-    const imgAddOriginalKnowledge = (pos, $file) => {
+    const imgAddKnowledge = (ref, pos, $file) => {
       uploadObject($file).then((res) => {
         const url = "https://" + res.data.fileLocation;
-        originalKnowledgeRef.value.$img2Url(pos, url);
+        ref.value.$img2Url(pos, url);
       });
     };
-    const saveOriginalKnowledge = () => {
-      emit("saveOriginalKnowledge", {
-        originalKnowledgeValue: originalKnowledgeValue.value,
+    const saveKnowledge = (emitKey, knowledgeValue) => {
+      const payload = {
         position_index: props.position.position_index,
-      });
-    };
-    const imgAddTransformedKnowledge = (pos, $file) => {
-      uploadObject($file).then((res) => {
-        const url = "https://" + res.data.fileLocation;
-        transformedKnowledgeRef.value.$img2Url(pos, url);
-      });
-    };
-    const saveTransformedKnowledge = () => {
-      emit("saveTransformedKnowledge", {
-        transformedKnowledgeValue: transformedKnowledgeValue.value,
-        position_index: props.position.position_index,
-      });
+        transformedKnowledgeValue:
+          emitKey === "saveTransformedKnowledge"
+            ? knowledgeValue.value
+            : undefined,
+        originalKnowledgeValue:
+          emitKey === "saveOriginalKnowledge"
+            ? knowledgeValue.value
+            : undefined,
+      };
+
+      emit(emitKey, payload);
     };
 
     onMounted(() => {
@@ -116,14 +112,10 @@ export default {
           prevEl: ".swiper-button-prev",
         },
       });
-
-      // 给markdown富文本赋值
-      originalKnowledgeValue.value = props.position.original_knowledge
-        ? props.position.original_knowledge
-        : "";
-      transformedKnowledgeValue.value = props.position.transformed_knowledge
-        ? props.position.transformed_knowledge
-        : "";
+      // 给富文本赋值
+      originalKnowledgeValue.value = props.position.original_knowledge || "";
+      transformedKnowledgeValue.value =
+        props.position.transformed_knowledge || "";
     });
 
     function getFixedPosition(position) {
@@ -133,7 +125,6 @@ export default {
         top: `${position.relativeY}%`,
       };
     }
-
     // 隐藏热点
     function hideSpot() {
       emit("hideSpot");
@@ -146,12 +137,14 @@ export default {
       transformedKnowledgeValue,
       originalKnowledgeValue,
       customToolbars,
-      imgAddOriginalKnowledge,
-      transformedKnowledgeRef,
-      originalKnowledgeRef,
-      imgAddTransformedKnowledge,
-      saveTransformedKnowledge,
-      saveOriginalKnowledge,
+      imgAddOriginalKnowledge: (pos, $file) =>
+        imgAddKnowledge(originalKnowledgeRef, pos, $file),
+      imgAddTransformedKnowledge: (pos, $file) =>
+        imgAddKnowledge(transformedKnowledgeRef, pos, $file),
+      saveTransformedKnowledge: () =>
+        saveKnowledge("saveTransformedKnowledge", transformedKnowledgeValue),
+      saveOriginalKnowledge: () =>
+        saveKnowledge("saveOriginalKnowledge", originalKnowledgeValue),
     };
   },
 };
