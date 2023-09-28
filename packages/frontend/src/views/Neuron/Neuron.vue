@@ -52,30 +52,48 @@
       </div>
     </template>
     <div class="recordBtn">
-      <el-button
-        v-if="currentVisibleIndex < positions.length - 1"
-        type="primary"
-        @click.stop="currentVisibleIndex = positions.length - 1"
-      >
-        显示全部
-      </el-button>
-      <el-button
-        v-if="currentVisibleIndex === positions.length - 1"
-        type="primary"
-        @click.stop="currentVisibleIndex = -1"
-      >
-        隐藏全部
-      </el-button>
-      <el-button type="primary" @click.stop="submit"> 保存状态 </el-button>
-      <el-button type="primary" @click.stop="recordFlag = !recordFlag">
-        {{ recordFlag ? "停止记录" : "开始记录" }}
-      </el-button>
+      <div class="row">
+        <WaterButton
+          v-if="currentVisibleIndex < positions.length - 1"
+          colorType="green"
+          @click.stop="currentVisibleIndex = positions.length - 1"
+          :value="'显示全部'"
+          style="margin-right: 12%; margin-bottom: 12%"
+        />
+        <WaterButton
+          v-if="currentVisibleIndex === positions.length - 1"
+          colorType="green"
+          @click.stop="currentVisibleIndex = -1"
+          :value="'隐藏全部'"
+          style="margin-right: 12%; margin-bottom: 12%"
+        />
+        <WaterButton
+          colorType="pink"
+          @click.stop="goBack"
+          :value="'返回首页'"
+          style="margin-bottom: 12%"
+        />
+      </div>
+      <div class="row">
+        <WaterButton
+          colorType="pink"
+          @click.stop="recordFlag = !recordFlag"
+          :value="recordFlag ? '停止记录' : '开始记录'"
+          style="margin-right: 12%"
+        />
+        <WaterButton
+          colorType="blue"
+          @click.stop="submit"
+          :value="'保存状态'"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { ref, computed, onMounted, onUnmounted, reactive } from "vue";
+import router from "@/router";
 import { useStore } from "vuex";
 import { getNextIndex } from "@/utils/utils";
 import {
@@ -88,13 +106,14 @@ import {
 } from "@/api/neuronPositions";
 import { ElMessage } from "element-plus";
 import HotSpot from "./HotSpot.vue";
+import WaterButton from "@/components/WaterButton.vue";
 import "animate.css";
 import _ from "lodash";
 import interact from "interactjs";
 
 export default {
   name: "Neuron",
-  components: { HotSpot },
+  components: { HotSpot, WaterButton },
   setup() {
     const store = useStore();
     const contentUrl = store.state.contentUrl;
@@ -208,6 +227,11 @@ export default {
       saveKnowledge(updateOriginalKnowledge, "originalKnowledge", value);
     };
 
+    // 返回上一页
+    function goBack() {
+      router.back();
+    }
+
     // 初始化数据
     const init = () => {
       // 获取数据
@@ -274,6 +298,7 @@ export default {
       toggleSpot,
       saveTransformedKnowledge,
       saveOriginalKnowledge,
+      goBack,
     };
   },
 };
@@ -333,5 +358,12 @@ export default {
 
 .draggable {
   cursor: pointer !important;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 </style>

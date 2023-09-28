@@ -9,7 +9,7 @@
     <div class="newGroup">
       <WaterButton
         :value="'新增组'"
-        colorType="blue"
+        colorType="pink"
         @click="showAddNewGroup = true"
       />
     </div>
