@@ -8,10 +8,12 @@
     </div>
     <div class="newGroup">
       <WaterButton
-        :value="'新增组'"
+        :value="'新组'"
         colorType="pink"
         @click="showAddNewGroup = true"
+        style="margin-right: 10%;"
       />
+      <WaterButton :value="'适应'" colorType="green" @click="zoomToFit" />
     </div>
     <AddNewGroup
       class="addNewGroup"
@@ -119,6 +121,11 @@ export default {
         selectedNode.value, // lookAt ({ x, y, z })
         3000 // ms transition duration
       );
+    };
+
+    // 适应屏幕
+    const zoomToFit = () => {
+      Graph.value.zoomToFit(400);
     };
 
     // 初始化数据
@@ -269,6 +276,7 @@ export default {
       contentImgUrl,
       previousCoverId,
       showAddNewGroup,
+      zoomToFit,
     };
   },
 };
@@ -358,10 +366,9 @@ function animateScene(Graph, universeMesh, starMesh) {
 .newGroup {
   position: fixed;
   z-index: 10;
-  top: 5%;
-  right: 0;
-  width: 120px;
-  height: 120px;
+  right: 1%;
+  width: 100px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
