@@ -102,16 +102,17 @@ export default {
     };
 
     const modifyNode = async () => {
-      const valid = await newNodeForm.value.validate();
-      if (!valid) return ElMessage.error("操作失败");
-
-      const payload = {
-        ...newNode.value,
-      };
-
-      const nodeIdRes = await addNeuronNode(payload);
-      if (nodeIdRes.code === 200) {
-        ElMessage({ message: "添加成功", type: "success" });
+      try {
+        const valid = await newNodeForm.value.validate();
+        if (!valid) return ElMessage.error("操作失败");
+        const nodeIdRes = await addNeuronNode(newNode.value);
+        if (nodeIdRes.code === 200) {
+          ElMessage({ message: "添加成功", type: "success" });
+          emit("cancel");
+          emit("modifySuccess");
+        }
+      } catch (error) {
+        ElMessage({ message: "添加失败", type: "error" });
       }
     };
 

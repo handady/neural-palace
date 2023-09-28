@@ -13,8 +13,9 @@ const formatDate = () => {
   const hour = date.getHours().toString().padStart(2, "0");
   const minute = date.getMinutes().toString().padStart(2, "0");
   const second = date.getSeconds().toString().padStart(2, "0");
+  const ms = date.getMilliseconds().toString().padStart(3, "0");
 
-  return `${year}${month}${day}${hour}${minute}${second}`;
+  return `${year}${month}${day}${hour}${minute}${second}${ms}`;
 };
 
 // 上传文件--element ui
@@ -22,13 +23,9 @@ router.post("/upload", upload.single("file"), (req, res) => {
   const fileData = req.file.buffer;
   const originalName = req.file.originalname;
   const ext = originalName.split(".").pop();
-  const nameWithoutExt = originalName.substring(
-    0,
-    originalName.length - ext.length - 1
-  );
 
   const formattedDate = formatDate();
-  const newFileName = `${nameWithoutExt}_${formattedDate}.${ext}`;
+  const newFileName = `${formattedDate}.${ext}`;
 
   req.body.fileData = fileData;
   req.body.fileName = newFileName;
@@ -40,13 +37,9 @@ router.post("/uploadFile", upload.single("file"), (req, res) => {
   const fileData = req.file.buffer; // 这里拿到的是一个 Buffer，不是 JSON 对象
   const originalName = req.file.originalname;
   const ext = originalName.split(".").pop();
-  const nameWithoutExt = originalName.substring(
-    0,
-    originalName.length - ext.length - 1
-  );
 
   const formattedDate = formatDate();
-  const newFileName = `${nameWithoutExt}_${formattedDate}.${ext}`;
+  const newFileName = `${formattedDate}.${ext}`;
 
   req.body.fileData = fileData;
   req.body.fileName = newFileName;

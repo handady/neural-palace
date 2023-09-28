@@ -17,6 +17,7 @@
       class="addNewGroup"
       v-if="showAddNewGroup"
       @cancel="showAddNewGroup = false"
+      @modifySuccess="initGraphData"
     />
     <transition :name="transitionName">
       <NodeInfo

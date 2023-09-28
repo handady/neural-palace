@@ -124,35 +124,39 @@ export default {
     };
 
     const modifyNode = async () => {
-      const valid = await newNodeForm.value.validate();
-      if (!valid) return ElMessage.error("操作失败");
+      try {
+        const valid = await newNodeForm.value.validate();
+        if (!valid) return ElMessage.error("操作失败");
 
-      const isUpdate = Boolean(isEdit);
-      const operation = isUpdate ? "修改" : "添加";
-      const apiCall = isUpdate ? updateNeuronNode : addNeuronNode;
-      const linkCall = isUpdate ? updateNeuronLink : addNeuronLink;
+        const isUpdate = Boolean(isEdit);
+        const operation = isUpdate ? "修改" : "添加";
+        const apiCall = isUpdate ? updateNeuronNode : addNeuronNode;
+        const linkCall = isUpdate ? updateNeuronLink : addNeuronLink;
 
-      const payload = {
-        ...newNode.value,
-        originId: isUpdate ? props.nodeInfo.id : undefined,
-      };
+        const payload = {
+          ...newNode.value,
+          originId: isUpdate ? props.nodeInfo.id : undefined,
+        };
 
-      const cachedId = newNode.value.id; // 缓存 ID
+        const cachedId = newNode.value.id; // 缓存 ID
 
-      const nodeIdRes = await apiCall(payload);
-      const isSuccess = await handleResponse(nodeIdRes, `${operation}成功`);
+        const nodeIdRes = await apiCall(payload);
+        const isSuccess = await handleResponse(nodeIdRes, `${operation}成功`);
 
-      if (!isSuccess) return;
+        if (!isSuccess) return;
 
-      if (!isUpdate) resetNewNode();
+        if (!isUpdate) resetNewNode();
 
-      const linkPayload = isUpdate
-        ? { originId: props.nodeInfo.id, currentId: cachedId }
-        : { source: props.nodeInfo.id, target: cachedId, value: 1 };
+        const linkPayload = isUpdate
+          ? { originId: props.nodeInfo.id, currentId: cachedId }
+          : { source: props.nodeInfo.id, target: cachedId, value: 1 };
 
-      const linkRes = await linkCall(linkPayload);
+        const linkRes = await linkCall(linkPayload);
 
-      if (linkRes /* 判断成功 */) emit("modifySuccess");
+        if (linkRes /* 判断成功 */) emit("modifySuccess");
+      } catch (error) {
+        ElMessage({ message: "操作失败", type: "error" });
+      }
     };
 
     // 封面图片上传成功
