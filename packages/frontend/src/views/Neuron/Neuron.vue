@@ -1,6 +1,26 @@
 <template>
   <div class="neuron-box" @click="recordPosition">
-    <div class="neuron" :style="backgroundStyle"></div>
+    <div class="neuron">
+      <!-- 使用swiper -->
+      <div class="swiper" ref="swiperRef">
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          <div
+            class="swiper-slide"
+            v-for="(item, index) in contentImgList"
+            :key="index"
+          >
+            <el-image
+              class="swiper-image"
+              :src="item"
+              fit="cover"
+              lazy
+            ></el-image>
+          </div>
+        </div>
+        <div class="swiper-scrollbar"></div>
+      </div>
+    </div>
     <template v-for="position in positions" class="fixed-marker-box">
       <transition
         v-if="position.position_index > addVisibleIndex"
@@ -54,6 +74,11 @@
     <div class="recordBtn">
       <div class="row">
         <WaterButton
+          colorType="pink"
+          :value="'新增图片'"
+          style="margin-right: 12%; margin-bottom: 12%"
+        />
+        <WaterButton
           v-if="currentVisibleIndex < positions.length - 1"
           colorType="green"
           @click.stop="currentVisibleIndex = positions.length - 1"
@@ -77,14 +102,20 @@
       <div class="row">
         <WaterButton
           colorType="pink"
+          :value="'删除图片'"
+          style="margin-right: 12%; margin-bottom: 12%"
+        />
+        <WaterButton
+          colorType="pink"
           @click.stop="recordFlag = !recordFlag"
           :value="recordFlag ? '停止记录' : '开始记录'"
-          style="margin-right: 12%"
+          style="margin-right: 12%; margin-bottom: 12%"
         />
         <WaterButton
           colorType="blue"
           @click.stop="submit"
           :value="'保存状态'"
+          style="margin-bottom: 12%"
         />
       </div>
     </div>
@@ -92,7 +123,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted, reactive } from "vue";
+import { ref, onMounted, onUnmounted, reactive } from "vue";
 import router from "@/router";
 import { useStore } from "vuex";
 import { getNextIndex } from "@/utils/utils";
@@ -103,6 +134,7 @@ import {
 import {
   updateTransformedKnowledge,
   updateOriginalKnowledge,
+  getContentImageList,
 } from "@/api/neuronPositions";
 import { ElMessage } from "element-plus";
 import HotSpot from "./HotSpot.vue";
@@ -110,6 +142,9 @@ import WaterButton from "@/components/WaterButton.vue";
 import "animate.css";
 import _ from "lodash";
 import interact from "interactjs";
+import Swiper from "swiper";
+import { Scrollbar } from "swiper/modules";
+import "swiper/swiper-bundle.css";
 
 export default {
   name: "Neuron",
@@ -118,18 +153,13 @@ export default {
     const store = useStore();
     const contentUrl = store.state.contentUrl;
     const contentId = store.state.id;
+    const contentImgList = ref([]);
     const recordFlag = ref(false);
     const interactFlag = ref(false); // 自由拖动的时候阀门
     const positions = ref([]); // 用于保存物品的百分比坐标
     const currentVisibleIndex = ref(-1); // 当前可见的物品
     const addVisibleIndex = ref(-1);
-
-    const backgroundStyle = computed(() => {
-      return {
-        background: `url(${contentUrl}) no-repeat center center`,
-        backgroundSize: "cover",
-      };
-    });
+    const swiperRef = ref(null);
 
     // 监听鼠标滚轮事件
     function handleWheel(event) {
@@ -241,10 +271,29 @@ export default {
           addVisibleIndex.value = positions.value.length - 1;
         }
       });
+      // 获取图片内容列表
+      getContentImageList({
+        id: contentId,
+      }).then((res) => {
+        contentImgList.value = res.data;
+      });
     };
 
     onMounted(() => {
       init();
+      Swiper.use([Scrollbar]);
+
+      new Swiper(swiperRef.value, {
+        direction: "horizontal",
+        // effect: "fade",
+        preventInteractionOnTransition: true,
+        slidesPerView: 1,
+        grabCursor: true,
+        scrollbar: {
+          el: ".swiper-scrollbar",
+          draggable: true,
+        },
+      });
       const debounceHandleWheel = _.debounce(handleWheel, 100);
       window.addEventListener("wheel", debounceHandleWheel);
       // 初始化interact.js
@@ -286,7 +335,6 @@ export default {
 
     return {
       contentUrl,
-      backgroundStyle,
       recordPosition,
       positions,
       getFixedPosition,
@@ -299,6 +347,8 @@ export default {
       saveTransformedKnowledge,
       saveOriginalKnowledge,
       goBack,
+      contentImgList,
+      swiperRef,
     };
   },
 };
@@ -365,5 +415,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.swiper,
+.swiper-image,
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+}
+
+:deep(.swiper-scrollbar-drag) {
+  background-color: #ff93df;
 }
 </style>

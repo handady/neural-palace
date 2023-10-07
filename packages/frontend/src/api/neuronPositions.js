@@ -17,3 +17,12 @@ export const updateTransformedKnowledge = (data) => {
     data,
   });
 };
+
+// 获取内容图片列表
+export const getContentImageList = (data) => {
+  return request({
+    url: "/api/neuronPositions/getContentImageList",
+    method: "post",
+    data,
+  });
+};
