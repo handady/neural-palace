@@ -15,7 +15,7 @@ router.post("/addNode", (req, res) => {
   const { id, group, material, coverImg, contentImg, color } = req.body;
 
   const sql =
-    "INSERT INTO nodes (id, `group`, material, coverImg, contentImg, color) VALUES (?, ?, ?, ?, ?, ?)";
+    "INSERT INTO nodes (id, `group`, material, coverImg, contentImg1, color) VALUES (?, ?, ?, ?, ?, ?)";
 
   connection.query(
     sql,

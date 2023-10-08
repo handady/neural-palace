@@ -10,12 +10,7 @@
             v-for="(item, index) in contentImgList"
             :key="index"
           >
-            <el-image
-              class="swiper-image"
-              :src="item"
-              fit="cover"
-              lazy
-            ></el-image>
+            <el-image :src="item" fit="cover"></el-image>
           </div>
         </div>
         <div class="swiper-scrollbar"></div>
@@ -77,6 +72,7 @@
           colorType="pink"
           :value="'新增图片'"
           style="margin-right: 12%; margin-bottom: 12%"
+          @click.stop="openDialog('add')"
         />
         <WaterButton
           v-if="currentVisibleIndex < positions.length - 1"
@@ -104,6 +100,7 @@
           colorType="pink"
           :value="'删除图片'"
           style="margin-right: 12%; margin-bottom: 12%"
+          @click.stop="openDialog('delete')"
         />
         <WaterButton
           colorType="pink"
@@ -119,6 +116,14 @@
         />
       </div>
     </div>
+    <EditDialog
+      v-model:dialogType="dialogType"
+      :contentId="contentId"
+      :contentImgId="contentImgList[activeContentIndex - 1]"
+      :contentIndex="contentImgList.length"
+      :activeContentIndex="activeContentIndex"
+      @modifySuccess="init"
+    />
   </div>
 </template>
 
@@ -139,6 +144,7 @@ import {
 import { ElMessage } from "element-plus";
 import HotSpot from "./HotSpot.vue";
 import WaterButton from "@/components/WaterButton.vue";
+import EditDialog from "./EditDialog.vue";
 import "animate.css";
 import _ from "lodash";
 import interact from "interactjs";
@@ -148,7 +154,7 @@ import "swiper/swiper-bundle.css";
 
 export default {
   name: "Neuron",
-  components: { HotSpot, WaterButton },
+  components: { HotSpot, WaterButton, EditDialog },
   setup() {
     const store = useStore();
     const contentUrl = store.state.contentUrl;
@@ -160,6 +166,8 @@ export default {
     const currentVisibleIndex = ref(-1); // 当前可见的物品
     const addVisibleIndex = ref(-1);
     const swiperRef = ref(null);
+    const dialogType = ref(null);
+    const activeContentIndex = ref(1);
 
     // 监听鼠标滚轮事件
     function handleWheel(event) {
@@ -186,7 +194,7 @@ export default {
       const nextIndex = getNextIndex(positions.value);
 
       positions.value.push({
-        id: contentId,
+        id: contentImgList.value[activeContentIndex.value - 1],
         position_index: nextIndex,
         relativeX,
         relativeY,
@@ -235,7 +243,7 @@ export default {
     // 更新markdown富文本
     const saveKnowledge = (updateFunc, field, value) => {
       const payload = {
-        id: contentId,
+        id: contentImgList.value[activeContentIndex.value - 1],
         position_index: value.position_index,
       };
       payload[field] = value[`${field}Value`];
@@ -264,19 +272,27 @@ export default {
 
     // 初始化数据
     const init = () => {
-      // 获取数据
-      getNeuronNodeContent(contentId).then((res) => {
-        if (res.code === 200) {
-          positions.value = res.data;
-          addVisibleIndex.value = positions.value.length - 1;
-        }
-      });
       // 获取图片内容列表
       getContentImageList({
         id: contentId,
       }).then((res) => {
         contentImgList.value = res.data;
+
+        // 获取数据
+        getNeuronNodeContent(
+          contentImgList.value[activeContentIndex.value - 1]
+        ).then((res) => {
+          if (res.code === 200) {
+            positions.value = res.data;
+            addVisibleIndex.value = positions.value.length - 1;
+          }
+        });
       });
+    };
+
+    // 打开对话框
+    const openDialog = (type) => {
+      dialogType.value = type;
     };
 
     onMounted(() => {
@@ -285,13 +301,27 @@ export default {
 
       new Swiper(swiperRef.value, {
         direction: "horizontal",
-        // effect: "fade",
-        preventInteractionOnTransition: true,
-        slidesPerView: 1,
-        grabCursor: true,
+        effect: "fade",
+        observer: true,
         scrollbar: {
           el: ".swiper-scrollbar",
           draggable: true,
+        },
+        on: {
+          slideChange: (swiper) => {
+            activeContentIndex.value = swiper.activeIndex + 1;
+            currentVisibleIndex.value = -1;
+            addVisibleIndex.value = -1;
+            // 获取数据
+            getNeuronNodeContent(
+              contentImgList.value[activeContentIndex.value - 1]
+            ).then((res) => {
+              if (res.code === 200) {
+                positions.value = res.data;
+                addVisibleIndex.value = positions.value.length - 1;
+              }
+            });
+          },
         },
       });
       const debounceHandleWheel = _.debounce(handleWheel, 100);
@@ -349,6 +379,11 @@ export default {
       goBack,
       contentImgList,
       swiperRef,
+      dialogType,
+      openDialog,
+      contentId,
+      init,
+      activeContentIndex,
     };
   },
 };

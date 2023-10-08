@@ -11,7 +11,7 @@
         :value="'新组'"
         colorType="pink"
         @click="showAddNewGroup = true"
-        style="margin-right: 10%;"
+        style="margin-right: 10%"
       />
       <WaterButton :value="'适应'" colorType="green" @click="zoomToFit" />
     </div>
@@ -189,20 +189,8 @@ export default {
             if (node.id !== previousCoverId.value) {
               coverImgUrl.value = "";
               contentImgUrl.value = "";
-              getObject({
-                filePath: node.coverImg,
-              }).then((res) => {
-                if (res.code === 200) {
-                  coverImgUrl.value = res.data;
-                }
-              });
-              getObject({
-                filePath: node.contentImg,
-              }).then((res) => {
-                if (res.code === 200) {
-                  contentImgUrl.value = res.data;
-                }
-              });
+              coverImgUrl.value = node.coverImg;
+              contentImgUrl.value = node.contentImg;
             }
             currentNode.value = {
               id: node.id, // 节点信息

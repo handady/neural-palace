@@ -39,9 +39,9 @@ export default {
 
     const handleSuccess = (res, file) => {
       if (props.imgType === "cover") {
-        emit("uploadSuccessCover", res.data.filePath);
+        emit("uploadSuccessCover", "https://" + res.data.fileLocation);
       } else {
-        emit("uploadSuccessContent", res.data.filePath);
+        emit("uploadSuccessContent", "https://" + res.data.fileLocation);
       }
     };
 

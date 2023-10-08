@@ -26,3 +26,21 @@ export const getContentImageList = (data) => {
     data,
   });
 };
+
+// 添加内容图片
+export const addContentImage = (data) => {
+  return request({
+    url: "/api/neuronPositions/addContentImage",
+    method: "post",
+    data,
+  });
+};
+
+// 删除内容图片
+export const deleteContentImage = (data) => {
+  return request({
+    url: "/api/neuronPositions/deleteContentImage",
+    method: "post",
+    data
+  });
+}

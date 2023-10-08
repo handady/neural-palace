@@ -1,35 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../db/mysqlConnection"); // 导入连接
-require("dotenv").config();
-const COS = require("cos-nodejs-sdk-v5");
-
-// Initialize the COS instance
-const cos = new COS({
-  SecretId: process.env.COS_SECRET_ID,
-  SecretKey: process.env.COS_SECRET_KEY,
-});
-
-const getObjectUrlPromise = (filePath) => {
-  return new Promise((resolve, reject) => {
-    cos.getObjectUrl(
-      {
-        Bucket: process.env.COS_BUCKET_NAME,
-        Region: process.env.COS_REGION,
-        Key: filePath,
-        Sign: true,
-        Expires: 5000,
-      },
-      (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.Url);
-        }
-      }
-    );
-  });
-};
 
 // 更新node_positions表里面的transformed_knowledge字段,根据id和position_index联合主键
 router.post("/updateTransformedKnowledge", (req, res) => {
@@ -65,26 +36,93 @@ router.post("/updateOriginalKnowledge", (req, res) => {
 router.post("/getContentImageList", (req, res) => {
   const { id } = req.body;
   const sql =
-    "SELECT contentImg, contentImg2, contentImg3, contentImg4, contentImg5 FROM nodes WHERE id = ?";
+    "SELECT contentImg1, contentImg2, contentImg3, contentImg4, contentImg5 FROM nodes WHERE id = ?";
   connection.query(sql, [id], (err, rows) => {
     if (err) {
       res.standard(500, null, err);
     } else {
-      if (rows && rows.length > 0) {
-        const images = Object.values(rows[0]).filter((img) => img !== null);
+      const result = [];
+      rows.forEach((row) => {
+        for (const value of Object.values(row)) {
+          if (value !== null) {
+            result.push(value);
+          }
+        }
+      });
+      res.standard(200, result, "获取成功");
+    }
+  });
+});
 
-        // 对每个图片都调用cos.getObjectUrl
-        const promises = images.map(getObjectUrlPromise);
-        Promise.all(promises)
-          .then((urls) => {
-            res.standard(200, urls, "获取成功");
-          })
-          .catch((err) => {
-            res.standard(500, null, err);
-          });
-      } else {
-        res.standard(200, [], "无数据");
+// 增加内容图片
+router.post("/addContentImage", (req, res) => {
+  const { contentId, contentImage } = req.body;
+
+  // SQL query to fetch all contentImg columns
+  const fetchSql = `SELECT contentImg1, contentImg2, contentImg3, contentImg4, contentImg5 FROM nodes WHERE id = ?`;
+
+  connection.query(fetchSql, [contentId], (err, results) => {
+    if (err) {
+      return res.standard(500, null, err);
+    }
+
+    if (results.length === 0) {
+      return res.standard(404, null, "Content not found");
+    }
+
+    const row = results[0];
+    let targetColumn = null;
+
+    // Find the first empty column
+    for (let i = 1; i <= 5; i++) {
+      if (!row[`contentImg${i}`]) {
+        targetColumn = `contentImg${i}`;
+        break;
       }
+    }
+
+    if (!targetColumn) {
+      return res.standard(400, null, "All columns are filled");
+    }
+
+    // SQL query to update the target column
+    const updateSql = `UPDATE nodes SET ?? = ? WHERE id = ?`;
+
+    connection.query(
+      updateSql,
+      [targetColumn, contentImage, contentId],
+      (updateErr) => {
+        if (updateErr) {
+          return res.standard(500, null, updateErr);
+        }
+
+        res.standard(200, { contentId }, "编辑成功");
+      }
+    );
+  });
+});
+
+// 删除内容图片
+router.post("/deleteContentImage", (req, res) => {
+  const { contentId, contentIndex, contentImgId } = req.body;
+
+  const columnName = `contentImg${contentIndex}`;
+  const sql = `UPDATE nodes SET ?? = NULL WHERE id = ?`;
+
+  connection.query(sql, [columnName, contentId], (err, rows) => {
+    if (err) {
+      res.standard(500, null, err);
+    } else {
+      // 将node_positions表里面id为contentImgId的数据删除
+      const deleteSql = `DELETE FROM node_positions WHERE id = ?`;
+
+      connection.query(deleteSql, [contentImgId], (err, rows) => {
+        if (err) {
+          res.standard(500, null, err);
+        } else {
+          res.standard(200, { contentId }, "删除成功");
+        }
+      });
     }
   });
 });
