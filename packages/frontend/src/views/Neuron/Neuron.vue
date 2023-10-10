@@ -10,7 +10,8 @@
             v-for="(item, index) in contentImgList"
             :key="index"
           >
-            <el-image :src="item" fit="cover"></el-image>
+            <el-image class="backgroundImg" :src="item" fit="cover"></el-image>
+            <el-image class="frontImg" :src="item" fit="contain"></el-image>
           </div>
         </div>
         <div class="swiper-scrollbar"></div>
@@ -219,6 +220,7 @@ export default {
         submitNeuronNodeContent(positions.value).then((res) => {
           if (res.code === 200) {
             ElMessage.success("提交成功");
+            recordFlag.value = false;
           } else {
             ElMessage.error("提交失败");
           }
@@ -389,7 +391,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .neuron-box {
   width: 100%;
   height: 100%;
@@ -459,6 +461,23 @@ export default {
   height: 100%;
   position: relative;
   z-index: 0;
+
+  .backgroundImg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: blur(12px);
+    transform: scale(1.12);
+  }
+
+  .frontImg {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%;
+    height: 95%;
+  }
 }
 
 :deep(.swiper-scrollbar-drag) {

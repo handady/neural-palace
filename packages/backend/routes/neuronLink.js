@@ -75,12 +75,33 @@ router.post("/updateLink", (req, res) => {
 router.post("/connectLink", (req, res) => {
   const { sourceId, targetId } = req.body;
 
-  const sql = "INSERT INTO links (source, target, value) VALUES (?, ?, ?)";
+  // 先查询是否存在相应的连接
+  const checkSql =
+    "SELECT * FROM links WHERE (source = ? AND target = ?) OR (source = ? AND target = ?)";
 
-  connection.query(sql, [sourceId, targetId, 1], (err, result) => {
-    if (err) res.standard(500, null, err);
-    else res.standard(200, { id: result.insertId }, "节点连接线添加成功");
-  });
+  connection.query(
+    checkSql,
+    [sourceId, targetId, targetId, sourceId],
+    (err, results) => {
+      if (err) {
+        res.standard(500, null, err);
+        return;
+      }
+
+      // 如果查询结果不为空，说明已经存在该连接
+      if (results.length > 0) {
+        res.standard(200, null, "连接已存在");
+        return;
+      }
+
+      // 如果不存在该连接，则进行插入操作
+      const sql = "INSERT INTO links (source, target, value) VALUES (?, ?, ?)";
+      connection.query(sql, [sourceId, targetId, 1], (err, result) => {
+        if (err) res.standard(500, null, err);
+        else res.standard(200, { id: result.insertId }, "连接成功");
+      });
+    }
+  );
 });
 
 // 断开两个节点

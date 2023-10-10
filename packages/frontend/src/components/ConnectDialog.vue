@@ -10,6 +10,7 @@
           :loading="loading"
           :remote-method="debouncedSearch"
           placeholder="请选择或输入源神经元"
+          style="width: 80%"
         >
           <el-option
             v-for="neuron in searchResults"
@@ -29,6 +30,7 @@
           :loading="loading"
           :remote-method="debouncedSearch"
           placeholder="请选择或输入目标神经元"
+          style="width: 80%"
         >
           <el-option
             v-for="neuron in searchResults"
@@ -41,8 +43,9 @@
     </el-form>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="connectNeurons">连接</el-button>
+      <el-button type="warning" @click="swapValues">交换</el-button>
       <el-button type="danger" @click="disconnectNeurons">断开</el-button>
+      <el-button type="primary" @click="connectNeurons">连接</el-button>
     </div>
   </el-dialog>
 </template>
@@ -83,12 +86,20 @@ export default {
     };
 
     const connectNeurons = () => {
+      // 如果某一个神经元为空，则提示用户
+      if (!selectedSource.value || !selectedTarget.value) {
+        ElMessage.error("请选择要连接的两个神经元");
+        return;
+      } else if (selectedSource.value === selectedTarget.value) {
+        ElMessage.error("源神经元与目标神经元不能相同");
+        return;
+      }
       connectNeuronLink({
         sourceId: selectedSource.value,
         targetId: selectedTarget.value,
       }).then((res) => {
         if (res.code === 200) {
-          ElMessage.success("连接成功");
+          ElMessage.success(res.message);
           emit("update:showConnectDialog", false);
           emit("modifySuccess");
         } else {
@@ -98,6 +109,13 @@ export default {
     };
 
     const disconnectNeurons = () => {
+      if (!selectedSource.value || !selectedTarget.value) {
+        ElMessage.error("请选择要断开的两个神经元");
+        return;
+      } else if (selectedSource.value === selectedTarget.value) {
+        ElMessage.error("源神经元与目标神经元不能相同");
+        return;
+      }
       disconnectNeuronLink({
         sourceId: selectedSource.value,
         targetId: selectedTarget.value,
@@ -112,6 +130,13 @@ export default {
       });
     };
 
+    // 交换值
+    const swapValues = () => {
+      const temp = selectedSource.value;
+      selectedSource.value = selectedTarget.value;
+      selectedTarget.value = temp;
+    };
+
     return {
       selectedSource,
       selectedTarget,
@@ -121,6 +146,7 @@ export default {
       closeDialog,
       connectNeurons,
       disconnectNeurons,
+      swapValues,
     };
   },
 };

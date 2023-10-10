@@ -9,6 +9,8 @@
         <div class="back-content" v-if="!isModifyNode">
           <div class="row">
             <span class="rowId">{{ node.id }}</span>
+            <span class="rowId" style="margin: 0 4px">-</span>
+            <span class="rowId">{{ node.group }}</span>
           </div>
           <div class="row">
             <WaterButton
@@ -256,9 +258,9 @@ export default {
   justify-content: center;
   padding: 0 5%;
 
-  .rowId{
+  .rowId {
     font-weight: 600;
-    margin-bottom: 10%;;
+    margin-bottom: 10%;
   }
 }
 

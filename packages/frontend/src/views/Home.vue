@@ -40,7 +40,10 @@
       />
     </transition>
     <!-- 连接的dialog -->
-    <ConnectDialog v-model="showConnectDialog" @modifySuccess="initGraphData" />
+    <ConnectDialog
+      v-model:showConnectDialog="showConnectDialog"
+      @modifySuccess="initGraphData"
+    />
     <div id="3d-graph"></div>
   </div>
 </template>

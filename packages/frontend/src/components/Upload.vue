@@ -77,7 +77,7 @@ export default {
 }
 .upload-demo :deep(.el-upload-list) {
   flex: 1;
-  margin-top: 0;
+  margin: auto;
 }
 .upload-demo :deep(.el-upload-list .el-progress__text) {
   display: none;
@@ -85,5 +85,12 @@ export default {
 
 .upload-demo :deep(.el-upload-list .el-upload-list__item) {
   margin-bottom: 0;
+}
+
+.upload-demo :deep(.el-upload-list .el-upload-list__item-file-name) {
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
