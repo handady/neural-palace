@@ -13,7 +13,13 @@
         @click="showAddNewGroup = true"
         style="margin-right: 10%"
       />
-      <WaterButton :value="'适应'" colorType="green" @click="zoomToFit" />
+      <WaterButton
+        :value="'适应'"
+        colorType="green"
+        @click="zoomToFit"
+        style="margin-right: 10%"
+      />
+      <WaterButton :value="'连接'" colorType="blue" @click="connect" />
     </div>
     <AddNewGroup
       class="addNewGroup"
@@ -33,6 +39,8 @@
         ref="nodeInfoRef"
       />
     </transition>
+    <!-- 连接的dialog -->
+    <ConnectDialog v-model="showConnectDialog" @modifySuccess="initGraphData" />
     <div id="3d-graph"></div>
   </div>
 </template>
@@ -45,6 +53,7 @@ import { createStars, createUniverse } from "@/utils/functions"; // 导入相关
 import { getNeuronNode } from "@/api/neuronNode";
 import { getNeuronLink } from "@/api/neuronLink";
 import NodeInfo from "@/components/NodeInfo.vue";
+import ConnectDialog from "@/components/ConnectDialog.vue";
 import WaterButton from "../components/WaterButton.vue";
 import AddNewGroup from "@/components/AddNewGroup.vue";
 import "animate.css";
@@ -59,10 +68,9 @@ import {
   getNodeThreeObject,
   addPostProcessingEffects,
 } from "@/utils/init"; // 导入相关函数
-import { getObject } from "@/api/utils";
 
 export default {
-  components: { NodeInfo, WaterButton, AddNewGroup },
+  components: { NodeInfo, WaterButton, AddNewGroup, ConnectDialog },
   setup() {
     // 创建变量
     const [
@@ -75,6 +83,7 @@ export default {
       contentImgUrl,
       previousCoverId,
       showAddNewGroup,
+      showConnectDialog,
     ] = [
       ref(null),
       ref(null),
@@ -84,6 +93,7 @@ export default {
       ref(""),
       ref(""),
       ref(""),
+      ref(false),
       ref(false),
     ];
     const initData = ref({
@@ -252,6 +262,11 @@ export default {
     // 初始化数据
     initGraphData();
 
+    // 打开连接弹窗
+    const connect = () => {
+      showConnectDialog.value = true;
+    };
+
     return {
       Graph,
       currentNode,
@@ -265,6 +280,8 @@ export default {
       previousCoverId,
       showAddNewGroup,
       zoomToFit,
+      showConnectDialog,
+      connect,
     };
   },
 };
@@ -355,8 +372,8 @@ function animateScene(Graph, universeMesh, starMesh) {
   position: fixed;
   z-index: 10;
   right: 1%;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;

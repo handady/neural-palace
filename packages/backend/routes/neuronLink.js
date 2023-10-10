@@ -71,4 +71,28 @@ router.post("/updateLink", (req, res) => {
   );
 });
 
+// 连接两个节点
+router.post("/connectLink", (req, res) => {
+  const { sourceId, targetId } = req.body;
+
+  const sql = "INSERT INTO links (source, target, value) VALUES (?, ?, ?)";
+
+  connection.query(sql, [sourceId, targetId, 1], (err, result) => {
+    if (err) res.standard(500, null, err);
+    else res.standard(200, { id: result.insertId }, "节点连接线添加成功");
+  });
+});
+
+// 断开两个节点
+router.post("/disconnectLink", (req, res) => {
+  const { sourceId, targetId } = req.body;
+
+  const sql = "DELETE FROM links WHERE source = ? AND target = ?";
+
+  connection.query(sql, [sourceId, targetId], (err, result) => {
+    if (err) res.standard(500, null, err);
+    else res.standard(200, { id: result.insertId }, "节点连接线删除成功");
+  });
+});
+
 module.exports = router;

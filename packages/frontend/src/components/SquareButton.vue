@@ -46,7 +46,7 @@ export default {
 
 .button-64 span {
   background: #f37107;
-  padding: 10% 14%;
+  padding: 8% 14%;
   border-radius: 6px;
   width: 100%;
   height: 100%;

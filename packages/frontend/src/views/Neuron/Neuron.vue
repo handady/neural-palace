@@ -89,7 +89,7 @@
           style="margin-right: 12%; margin-bottom: 12%"
         />
         <WaterButton
-          colorType="pink"
+          colorType="green"
           @click.stop="goBack"
           :value="'返回首页'"
           style="margin-bottom: 12%"
@@ -97,7 +97,7 @@
       </div>
       <div class="row">
         <WaterButton
-          colorType="pink"
+          colorType="red"
           :value="'删除图片'"
           style="margin-right: 12%; margin-bottom: 12%"
           @click.stop="openDialog('delete')"

@@ -36,3 +36,21 @@ export const updateNeuronLink = (data) => {
     data,
   });
 };
+
+// 连接两个节点
+export const connectNeuronLink = (data) => {
+  return request({
+    url: "/api/neuronLink/connectLink",
+    method: "post",
+    data,
+  });
+}
+
+// 删除两个节点的连接
+export const disconnectNeuronLink = (data) => {
+  return request({
+    url: "/api/neuronLink/disconnectLink",
+    method: "post",
+    data,
+  });
+}

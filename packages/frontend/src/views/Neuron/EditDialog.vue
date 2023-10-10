@@ -92,6 +92,8 @@ export default {
     const closeDialog = () => {
       // Send an event to the parent to set dialogType to null
       emit("update:dialogType", null);
+      // 清空文件列表
+      fileList.value = [];
     };
 
     const confirm = (confirmType) => {

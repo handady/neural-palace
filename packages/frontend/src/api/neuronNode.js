@@ -56,3 +56,12 @@ export const getNeuronNodeContent = (id) => {
     },
   });
 }
+
+// 模糊查询nodes的id
+export const getNeuronNodeIds = (data) => {
+  return request({
+    url: "/api/neuronNode/getNeuronNodeIds",
+    method: "post",
+    data,
+  });
+}

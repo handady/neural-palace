@@ -8,33 +8,36 @@
       <div class="back" :style="backStyle" @click="toggleFlip">
         <div class="back-content" v-if="!isModifyNode">
           <div class="row">
+            <span class="rowId">{{ node.id }}</span>
+          </div>
+          <div class="row">
             <WaterButton
-              :value="'点我增加'"
+              :value="'增加'"
               @click.stop="modifyNode('add')"
               colorType="pink"
-              style="margin-right: 10%; margin-bottom: 20%"
+              style="margin-right: 10%; margin-bottom: 15%"
             />
             <WaterButton
-              :value="'点我修改'"
+              :value="'修改'"
               @click.stop="modifyNode('edit')"
               colorType="blue"
             />
           </div>
           <div class="row">
             <WaterButton
-              :value="'点我聚焦'"
+              :value="'聚焦'"
               @click.stop="focusOnNode"
               colorType="green"
-              style="margin-right: 10%; margin-bottom: 20%"
+              style="margin-right: 10%; margin-bottom: 15%"
             />
             <WaterButton
-              :value="'点我删除'"
+              :value="'删除'"
               @click.stop="deleteNode"
               colorType="red"
             />
           </div>
           <div class="row square-btn">
-            <SquareButton :value="'点我进入'" @click.stop="enterNode" />
+            <SquareButton :value="'进入'" @click.stop="enterNode" />
           </div>
         </div>
         <NodeDialog
@@ -192,7 +195,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .mask {
   position: fixed;
   width: 100%;
@@ -252,6 +255,11 @@ export default {
   display: flex;
   justify-content: center;
   padding: 0 5%;
+
+  .rowId{
+    font-weight: 600;
+    margin-bottom: 10%;;
+  }
 }
 
 .back-content {
@@ -266,6 +274,6 @@ export default {
 }
 
 .square-btn {
-  padding: 0 2%;
+  padding: 0 6%;
 }
 </style>
